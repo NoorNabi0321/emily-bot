@@ -4,4 +4,6 @@ db.query("SELECT NOW()")
 .then(()=>{
  console.log("Database Connected");
 })
-.catch(console.error);
+.catch((err)=>{
+ console.error("Database Error:", err);
+});
