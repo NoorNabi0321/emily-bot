@@ -8,6 +8,11 @@ import {
  ensureUserExists
 } from "../services/userService";
 
+import {
+ getUserRole
+}
+from "../services/permissionService";
+
 export const twilioRouter=Router();
 
 twilioRouter.post(
@@ -36,6 +41,25 @@ body
 await ensureUserExists(
 from
 );
+
+const user=
+await getUserRole(
+from
+);
+
+if(
+!user?.is_active
+){
+
+return res.send(`
+<Response>
+<Message>
+Access denied.
+</Message>
+</Response>
+`);
+
+}
 
 await saveMessage(
 from,
