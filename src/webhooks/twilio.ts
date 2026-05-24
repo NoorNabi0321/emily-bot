@@ -1,9 +1,18 @@
+import { Router } from "express";
 import { saveMessage } from "../services/messageLogger";
+import { ensureUserExists } from "../services/userService";
+
+export const twilioRouter = Router();
 
 twilioRouter.post("/whatsapp", async(req,res)=>{
 
  const from=req.body.From;
  const body=req.body.Body;
+
+ console.log("Sender:",from);
+ console.log("Message:",body);
+
+ await ensureUserExists(from);
 
  await saveMessage(
    from,
