@@ -13,6 +13,11 @@ import {
 }
 from "../services/permissionService";
 
+import {
+ parseIntent
+}
+from "../services/claude";
+
 export const twilioRouter=Router();
 
 twilioRouter.post(
@@ -67,17 +72,30 @@ from,
 body
 );
 
-let reply=
+let reply =
 "Emily received your message 🚀";
 
-if(
-body
-.toLowerCase()
-.includes("hello")
-){
+try{
 
-reply=
-"Hello Emily User 🚀";
+const aiResponse =
+await parseIntent(
+body
+);
+
+reply =
+JSON.stringify(
+aiResponse
+);
+
+}catch(error){
+
+console.error(
+"Claude Error:",
+error
+);
+
+reply =
+"Emily AI temporarily unavailable.";
 
 }
 

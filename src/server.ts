@@ -1,73 +1,70 @@
-import express
-from "express";
+import express from "express";
+import dotenv from "dotenv";
 
-import dotenv
-from "dotenv";
+import { twilioRouter } from "./webhooks/twilio";
 
-import {
- twilioRouter
-}
-from "./webhooks/twilio";
+// Uncomment after creating middleware/twilioAuth.ts
+// import { verifyTwilio } from "./middleware/twilioAuth";
 
 dotenv.config();
 
-const app=
-express();
+const app = express();
 
 app.use(
-express.urlencoded(
-{
-extended:false
-}
-)
+  express.urlencoded({
+    extended: false,
+  })
 );
+
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Emily Bot API Online 🚀");
+});
+
+app.get("/health", (req, res) => {
+  res.send("Emily Bot Running");
+});
+
+// Current Working Route
+app.use(
+  "/webhook",
+  twilioRouter
+);
+
+/*
+Later replace with:
 
 app.use(
-express.json()
+ "/webhook",
+ verifyTwilio,
+ twilioRouter
 );
 
-app.use(
-"/webhook",
-twilioRouter
-);
+after creating Twilio auth middleware
+*/
 
-app.get(
-"/",
-(req,res)=>{
+const PORT = Number(process.env.PORT) || 3000;
 
-res.send(
-"Emily Bot API Online"
-);
+console.log("Server Starting...");
 
-}
-);
+app.listen(PORT, () => {
+  console.log(`Emily Bot running on ${PORT}`);
+});
 
-app.get(
-"/health",
-(req,res)=>{
+process.on("uncaughtException", (err) => {
+  console.error(
+    "Uncaught Exception:",
+    err
+  );
+});
 
-res.send(
-"Emily Bot Running"
-);
-
-}
-);
-
-const PORT=
-process.env.PORT
-||3000;
-
-console.log(
-"Server Starting..."
-);
-
-app.listen(
-PORT,
-()=>{
-
-console.log(
-`Emily Bot running on ${PORT}`
-);
-
-}
+process.on(
+  "unhandledRejection",
+  (reason) => {
+    console.error(
+      "Unhandled Promise Rejection:",
+      reason
+    );
+  }
 );
