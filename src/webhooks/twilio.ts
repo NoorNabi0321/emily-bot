@@ -1,43 +1,92 @@
 import { Router } from "express";
-import { saveMessage } from "../services/messageLogger";
-import { ensureUserExists } from "../services/userService";
 
-export const twilioRouter = Router();
+import {
+ saveMessage
+} from "../services/messageLogger";
 
-twilioRouter.post("/whatsapp", async(req,res)=>{
+import {
+ ensureUserExists
+} from "../services/userService";
 
- const from=req.body.From;
- const body=req.body.Body;
+export const twilioRouter=Router();
 
- console.log("Sender:",from);
- console.log("Message:",body);
+twilioRouter.post(
+"/whatsapp",
 
- await ensureUserExists(from);
+async(req,res)=>{
 
- await saveMessage(
-   from,
-   "inbound",
-   body
- );
+try{
 
- let reply="Emily received your message.";
+const from=
+req.body.From || "";
 
- if(body.toLowerCase().includes("hello")){
-   reply="Hello Emily User 🚀";
- }
+const body=
+req.body.Body || "";
 
- await saveMessage(
-   from,
-   "outbound",
-   reply
- );
+console.log(
+"Sender:",
+from
+);
 
- res.set("Content-Type","text/xml");
+console.log(
+"Message:",
+body
+);
 
- res.send(`
+await ensureUserExists(
+from
+);
+
+await saveMessage(
+from,
+"inbound",
+body
+);
+
+let reply=
+"Emily received your message 🚀";
+
+if(
+body
+.toLowerCase()
+.includes("hello")
+){
+
+reply=
+"Hello Emily User 🚀";
+
+}
+
+await saveMessage(
+from,
+"outbound",
+reply
+);
+
+res.set(
+"Content-Type",
+"text/xml"
+);
+
+res.send(`
 <Response>
-<Message>${reply}</Message>
+<Message>
+${reply}
+</Message>
 </Response>
 `);
 
-});
+}catch(error){
+
+console.error(
+"Webhook Failed:",
+error
+);
+
+res.status(500)
+.send("Error");
+
+}
+
+}
+);

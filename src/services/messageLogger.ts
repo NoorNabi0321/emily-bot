@@ -6,6 +6,8 @@ export async function saveMessage(
  body:string
 ){
 
+ try{
+
  await db.query(
  `
  INSERT INTO messages
@@ -14,5 +16,13 @@ export async function saveMessage(
  `,
  [phone,direction,body]
  );
+
+ console.log("Message Saved");
+
+ }catch(error){
+
+ console.error("Message Save Failed:",error);
+
+ }
 
 }

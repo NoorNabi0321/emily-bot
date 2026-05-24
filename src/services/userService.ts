@@ -4,6 +4,8 @@ export async function ensureUserExists(
  phone:string
 ){
 
+ try{
+
  await db.query(
  `
  INSERT INTO whatsapp_users
@@ -17,5 +19,16 @@ export async function ensureUserExists(
  `,
  [phone]
  );
+
+ console.log("User Checked");
+
+ }catch(error){
+
+ console.error(
+ "User Registration Failed:",
+ error
+ );
+
+ }
 
 }
