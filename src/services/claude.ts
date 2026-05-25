@@ -23,7 +23,7 @@ await client
 .create({
 
 model:
-"claude-sonnet-4-20250514",
+"claude-sonnet-4-5",
 
 max_tokens:
 200,
