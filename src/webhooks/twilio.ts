@@ -83,9 +83,9 @@ body
 );
 
 reply =
-JSON.stringify(
-aiResponse
-);
+`Intent: ${
+aiResponse.intent
+}`;
 
 }catch(error){
 

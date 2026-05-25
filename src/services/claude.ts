@@ -1,52 +1,78 @@
-import Anthropic
-from "@anthropic-ai/sdk";
+import Anthropic from "@anthropic-ai/sdk";
 
-const client=
-new Anthropic({
-
-apiKey:
-process.env
-.ANTHROPIC_API_KEY
-
+const client = new Anthropic({
+ apiKey: process.env.ANTHROPIC_API_KEY
 });
 
-export async function
-parseIntent(
-message:string
+export async function parseIntent(
+ message:string
 ){
 
-const response=
-await client
-.messages
-.create({
+ try{
 
-model:
-"claude-sonnet-4-20250514",
+ const response =
+ await client.messages.create({
 
-max_tokens:150,
+ model:"claude-sonnet-4-0",
 
-messages:[
-{
-role:"user",
-content:
-`
-Classify intent:
+ max_tokens:150,
+
+ messages:[
+ {
+ role:"user",
+ content:`
+You are Emily Bot.
+
+User Message:
 
 ${message}
 
-Return ONLY:
+Classify intent.
+
+Possible intents:
 
 help
 project_query
 status_update
 unknown
-`
+
+Return ONLY JSON:
+
+{
+ "intent":"value"
 }
-]
+`
+ }
+ ]
 
-});
+ });
 
-return response
-.content[0];
+ const text =
+ response.content[0]
+ ?.type==="text"
+
+ ?response.content[0].text
+
+ :'{"intent":"unknown"}';
+
+ return JSON.parse(
+ text
+ );
+
+ }catch(error){
+
+ console.error(
+ "Claude Error:",
+ error
+ );
+
+ return {
+
+ intent:
+ "unknown"
+
+ };
+
+ }
 
 }
