@@ -20,9 +20,9 @@ export async function parseIntent(
  system:`
 You are Emily Bot.
 
-Classify user messages.
+Classify messages.
 
-Possible intents:
+Allowed intents:
 
 greeting
 project_query
@@ -30,21 +30,15 @@ status_update
 help
 unknown
 
-Examples:
+Return ONLY valid JSON.
 
-"hello" -> greeting
+Do NOT use markdown.
 
-"show projects" -> project_query
-
-"mark project done" -> status_update
-
-Return ONLY JSON.
+Do NOT use \`\`\`json.
 
 Example:
 
-{
- "intent":"greeting"
-}
+{"intent":"greeting"}
 `,
 
  messages:[
@@ -69,8 +63,22 @@ Example:
 
  }
 
+ let text =
+ result.text.trim();
+
+ console.log(
+ "Claude Raw:",
+ text
+ );
+
+ text =
+ text
+ .replace(/```json/g,"")
+ .replace(/```/g,"")
+ .trim();
+
  return JSON.parse(
- result.text
+ text
  );
 
  }catch(error){
