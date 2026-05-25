@@ -29,113 +29,113 @@ SessionData|null=null;
 
 async function login(){
 
-  console.log(
-    "BIH URL:",
-    process.env
-    .BOLTED_IRON_API_URL
-  );
+ console.log(
+ "BIH URL:",
+ process.env
+ .BOLTED_IRON_API_URL
+ );
 
-  const response=
-  await fetch(
+ const response=
+ await fetch(
 
-    process.env
-    .BOLTED_IRON_API_URL!,
+ `${process.env.BOLTED_IRON_API_URL}/auth.login`,
 
-    {
+ {
 
-      method:"POST",
+ method:"POST",
 
-      headers:{
+ headers:{
 
-        "Content-Type":
-        "application/json"
+ "Content-Type":
+ "application/json"
 
-      },
+ },
 
-      body:
-      JSON.stringify({
+ body:
+ JSON.stringify({
 
-        procedure:
-        "auth.login",
+ json:{
 
-        email:
-        process.env
-        .BOLTED_IRON_BOT_EMAIL,
+ email:
+ process.env
+ .BOLTED_IRON_BOT_EMAIL,
 
-        password:
-        process.env
-        .BOLTED_IRON_BOT_PASSWORD
+ password:
+ process.env
+ .BOLTED_IRON_BOT_PASSWORD
 
-      })
+ }
 
-    }
+ })
 
-  );
+ }
 
-  console.log(
+ );
 
-    "BIH Login Status:",
+ console.log(
 
-    response.status
+ "BIH Login Status:",
 
-  );
+ response.status
 
-  const raw=
-  await response.text();
+ );
 
-  console.log(
+ const raw=
+ await response.text();
 
-    "BIH Login Raw:",
+ console.log(
 
-    raw
+ "BIH Login Raw:",
 
-  );
+ raw
 
-  if(
-    !response.ok
-  ){
+ );
 
-    throw new Error(
+ if(
+ !response.ok
+ ){
 
-      `BIH Login Failed:
+ throw new Error(
+
+ `BIH Login Failed:
 ${response.status}`
 
-    );
+ );
 
-  }
+ }
 
-  const data=
-  JSON.parse(
-    raw
-  ) as TrpcResponse;
+ const data=
+ JSON.parse(
+ raw
+ ) as TrpcResponse;
 
-  const cookie=
+ const cookie=
 
-    data
-    ?.sessionCookie
+ data
+ ?.sessionCookie
 
-    ||
+ ||
 
-    data
-    ?.result
-    ?.data
-    ?.sessionCookie
+ data
+ ?.result
+ ?.data
+ ?.sessionCookie
 
-    ||
+ ||
 
-    null;
+ null;
 
-  if(
-    !cookie
-  ){
+ if(
+ !cookie
+ ){
 
-    throw new Error(
-      "Session cookie missing"
-    );
+ throw new Error(
+ "Session cookie missing"
+ );
 
-  }
+ }
 
-  return cookie;
+ return cookie;
 
 }
 
