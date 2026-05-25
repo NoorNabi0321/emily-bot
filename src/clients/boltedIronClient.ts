@@ -1,10 +1,24 @@
 import fetch from "node-fetch";
 
-interface SessionData{
+interface SessionData {
 
  sessionCookie:string;
 
  expiresAt:number;
+
+}
+
+interface TrpcResponse{
+
+ result?:{
+
+  data?:any;
+
+ };
+
+ sessionCookie?:string;
+
+ [key:string]:any;
 
 }
 
@@ -48,16 +62,29 @@ async function login(){
  ){
 
  throw new Error(
+
  `BIH Login Failed:
  ${response.status}`
+
  );
 
  }
 
- const data=
- await response.json();
+const data =
+(await response.json()) as TrpcResponse;
 
- return data.sessionCookie;
+ if(
+ !data.sessionCookie
+ ){
+
+ throw new Error(
+ "No session cookie"
+ );
+
+ }
+
+ return data
+ .sessionCookie;
 
 }
 
@@ -70,7 +97,8 @@ async function getSession(){
 
  cache &&
 
- cache.expiresAt>now
+ cache.expiresAt>
+ now
 
  ){
 
@@ -156,21 +184,28 @@ async function trpc(
 
  }
 
- const data=
- await response.json();
+const data =
+(await response.json()) as TrpcResponse;
+
+ if(
+ data.result
+ ?.data
+ ){
 
  return data
- ?.result
- ?.data
+ .result
+ .data;
 
- ??data;
+ }
+
+ return data;
 
 }
 
 export const
 boltedIron={
 
- getProjects(){
+ async getProjects(){
 
  return trpc(
 
@@ -182,7 +217,7 @@ boltedIron={
 
  },
 
- getChecklist(
+ async getChecklist(
 
  projectId:number
 
