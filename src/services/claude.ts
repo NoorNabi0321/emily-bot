@@ -15,45 +15,83 @@ export async function parseIntent(
 
  model:"claude-sonnet-4-0",
 
- max_tokens:150,
+ max_tokens:100,
 
- messages:[
- {
- role:"user",
- content:`
+ system:
+`
 You are Emily Bot.
 
-User Message:
+You classify WhatsApp project-management messages.
 
-${message}
-
-Classify intent.
-
-Possible intents:
+Allowed intents:
 
 help
 project_query
 status_update
+greeting
 unknown
 
-Return ONLY JSON:
+Rules:
+
+hello
+hi
+hey
+
+→ greeting
+
+show projects
+list projects
+project details
+
+→ project_query
+
+change status
+update project
+mark done
+
+→ status_update
+
+If uncertain → unknown
+
+Return ONLY JSON.
+
+Example:
 
 {
- "intent":"value"
+ "intent":"greeting"
 }
-`
+`,
+
+ messages:[
+ {
+ role:"user",
+ content:message
  }
  ]
 
  });
 
+ const result =
+ response.content[0];
+
+ if(
+ result.type!=="text"
+ ){
+
+ return {
+ intent:"unknown"
+ };
+
+ }
+
  const text =
- response.content[0]
- ?.type==="text"
+ result.text
+ .trim();
 
- ?response.content[0].text
-
- :'{"intent":"unknown"}';
+ console.log(
+ "Claude Raw:",
+ text
+ );
 
  return JSON.parse(
  text

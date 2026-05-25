@@ -82,10 +82,39 @@ await parseIntent(
 body
 );
 
-reply =
-`Intent: ${
+if(
 aiResponse.intent
-}`;
+==="greeting"
+){
+
+reply=
+"Hello 👋 Emily Bot is online.";
+
+}
+else if(
+aiResponse.intent
+==="project_query"
+){
+
+reply=
+"Project system integration coming next 🚀";
+
+}
+else if(
+aiResponse.intent
+==="status_update"
+){
+
+reply=
+"Project status update capability detected.";
+
+}
+else{
+
+reply=
+"I could not understand that request.";
+
+}
 
 }catch(error){
 
