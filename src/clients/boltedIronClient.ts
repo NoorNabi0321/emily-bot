@@ -40,20 +40,27 @@ async function callTrpc(
 ):Promise<any>{
 
  const apiUrl=
+
  process.env
  .BOLTED_IRON_API_URL;
 
  const bearerToken=
+
  process.env
  .BOLTED_IRON_BEARER_TOKEN;
 
  if(
- !apiUrl||
+
+ !apiUrl ||
+
  !bearerToken
+
  ){
 
  throw new Error(
+
  "Missing BIH Variables"
+
  );
 
  }
@@ -66,6 +73,7 @@ async function callTrpc(
  );
 
  let url=
+
  `${apiUrl}/${procedure}`;
 
  const headers:any={
@@ -88,8 +96,11 @@ async function callTrpc(
  "GET";
 
  if(
- Object.keys(input)
- .length
+
+ Object.keys(
+ input
+ ).length
+
  ){
 
  url+=
@@ -128,8 +139,11 @@ async function callTrpc(
  const response=
 
  await fetch(
+
  url,
+
  options
+
  );
 
  const raw=
@@ -138,8 +152,11 @@ async function callTrpc(
  .text();
 
  console.log(
+
  `[BIH] ${procedure} Status:`,
+
  response.status
+
  );
 
  if(
@@ -148,12 +165,16 @@ async function callTrpc(
 
  let error=
 
- response.statusText;
+ response
+ .statusText;
 
  try{
 
  const parsed=
- JSON.parse(raw);
+
+ JSON.parse(
+ raw
+ );
 
  error=
 
@@ -181,9 +202,10 @@ ${error}`
  }
 
  const data=
+
  JSON.parse(
  raw
- )as TrpcResponse;
+ ) as TrpcResponse;
 
  return(
 
@@ -199,6 +221,55 @@ ${error}`
 
 }
 
+function normalizeProjects(
+
+ projects:any
+
+){
+
+ return(
+
+ projects?.json
+
+ ||
+
+ projects
+
+ ||
+
+ []
+
+ );
+
+}
+
+function contains(
+
+ value:any,
+
+ search:string
+
+){
+
+ return(
+
+ value
+
+ ?.toString()
+
+ .toLowerCase()
+
+ .includes(
+
+ search
+ .toLowerCase()
+
+ )
+
+ );
+
+}
+
 export const boltedIron={
 
  async getProjects(
@@ -207,13 +278,212 @@ export const boltedIron={
 
  ){
 
- return callTrpc(
+ let projects=
 
- "projects.list",
+ normalizeProjects(
 
- filters
+ await callTrpc(
+
+ "projects.list"
+
+ )
 
  );
+
+ if(
+ filters.status
+ ){
+
+ projects=
+
+ projects.filter(
+
+ (p:any)=>
+
+ contains(
+
+ p.status,
+
+ filters.status
+
+ )
+
+ );
+
+ }
+
+ if(
+ filters.date
+ ){
+
+ projects=
+
+ projects.filter(
+
+ (p:any)=>{
+
+ const start=
+
+ p.startDate
+
+ ||
+
+ p.createdAt
+
+ ||
+
+ "";
+
+ return contains(
+
+ start,
+
+ filters.date
+
+ );
+
+ }
+
+ );
+
+ }
+
+ if(
+ filters.projectName
+ ){
+
+ projects=
+
+ projects.filter(
+
+ (p:any)=>
+
+ contains(
+
+ p.name,
+
+ filters.projectName
+
+ )
+
+ );
+
+ }
+
+ if(
+ filters.limit
+ ){
+
+ projects=
+
+ projects.slice(
+
+ 0,
+
+ Number(
+ filters.limit
+ )
+
+ );
+
+ }
+
+ if(
+ filters.subcontractor
+ ){
+
+ const assignments=
+
+ await Promise.all(
+
+ projects.map(
+
+ async(
+ p:any
+ )=>{
+
+ try{
+
+ const data=
+
+ await this
+ .getAssignments(
+
+ p.id
+
+ );
+
+ return{
+
+ project:p,
+
+ assignment:data
+
+ };
+
+ }
+
+ catch{
+
+ return null;
+
+ }
+
+ }
+
+ )
+
+ );
+
+ projects=
+
+ assignments
+
+ .filter(
+
+ (x:any)=>{
+
+ if(
+ !x
+ ){
+
+ return false;
+
+ }
+
+ const raw=
+
+ JSON.stringify(
+
+ x.assignment
+
+ );
+
+ return contains(
+
+ raw,
+
+ filters.subcontractor
+
+ );
+
+ }
+
+ )
+
+ .map(
+
+ (
+ x:any
+ )=>
+
+ x.project
+
+ );
+
+ }
+
+ return projects;
 
  },
 
@@ -223,40 +493,17 @@ export const boltedIron={
 
  ){
 
- const response=
+ const projects=
 
  await this
- .getProjects();
+ .getProjects({
 
- const list=
-
- response
- ?.json
-
- ||
-
- response
-
- ||
-
- [];
-
- return list.find(
-
- (p:any)=>
-
- p.name
-
- ?.toLowerCase()
-
- .includes(
-
+ projectName:
  name
- .toLowerCase()
 
- )
+ });
 
- );
+ return projects[0];
 
  },
 

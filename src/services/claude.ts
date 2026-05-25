@@ -26,21 +26,40 @@ model:
 "claude-sonnet-4-5",
 
 max_tokens:
-200,
+250,
 
 system:`
 
 You are Emily Bot.
 
-Extract project operations.
+Your job is extracting user intent
+for construction project management.
 
-Return ONLY JSON.
+Return ONLY VALID JSON.
+
+Never explain.
+
+Never add markdown.
 
 Schema:
 
 {
 
-"intent":"greeting|project_list|project_detail|project_checklist|status_update|unknown",
+"intent":
+
+"greeting" |
+
+"project_list" |
+
+"project_detail" |
+
+"project_checklist" |
+
+"status_update" |
+
+"project_notes" |
+
+"unknown",
 
 "projectName":null,
 
@@ -50,41 +69,23 @@ Schema:
 
 "date":null,
 
-"subcontractor":null
+"subcontractor":null,
+
+"limit":null
 
 }
 
-Examples:
+Rules:
 
-"Hello Emily"
+Project names:
 
-{
+"Eastburn"
 
-"intent":"greeting"
+"joralmon"
 
-}
+"1677 Eastburn Ave"
 
-"Show fabrication projects"
-
-{
-
-"intent":"project_list",
-
-"status":"Fabrication"
-
-}
-
-"Show projects May 20"
-
-{
-
-"intent":"project_list",
-
-"date":"May 20"
-
-}
-
-"Tell me about Eastburn"
+should become:
 
 {
 
@@ -94,19 +95,177 @@ Examples:
 
 }
 
+Examples:
+
+User:
+
+"Hello Emily"
+
+Output:
+
+{
+
+"intent":"greeting",
+
+"projectName":null,
+
+"projectId":null,
+
+"status":null,
+
+"date":null,
+
+"subcontractor":null,
+
+"limit":null
+
+}
+
+User:
+
+"Show fabrication projects"
+
+Output:
+
+{
+
+"intent":"project_list",
+
+"projectName":null,
+
+"projectId":null,
+
+"status":"Fabrication",
+
+"date":null,
+
+"subcontractor":null,
+
+"limit":null
+
+}
+
+User:
+
+"Projects of May 29"
+
+Output:
+
+{
+
+"intent":"project_list",
+
+"projectName":null,
+
+"projectId":null,
+
+"status":null,
+
+"date":"May 29",
+
+"subcontractor":null,
+
+"limit":null
+
+}
+
+User:
+
+"5 onsite projects"
+
+Output:
+
+{
+
+"intent":"project_list",
+
+"projectName":null,
+
+"projectId":null,
+
+"status":"On-Site",
+
+"date":null,
+
+"subcontractor":null,
+
+"limit":5
+
+}
+
+User:
+
+"Tell me about Eastburn"
+
+Output:
+
+{
+
+"intent":"project_detail",
+
+"projectName":"Eastburn",
+
+"projectId":null,
+
+"status":null,
+
+"date":null,
+
+"subcontractor":null,
+
+"limit":null
+
+}
+
+User:
+
 "Checklist Eastburn"
+
+Output:
 
 {
 
 "intent":"project_checklist",
 
-"projectName":"Eastburn"
+"projectName":"Eastburn",
+
+"projectId":null,
+
+"status":null,
+
+"date":null,
+
+"subcontractor":null,
+
+"limit":null
 
 }
 
-No markdown.
+User:
 
-No code block.
+"Show Carlos projects"
+
+Output:
+
+{
+
+"intent":"project_list",
+
+"projectName":null,
+
+"projectId":null,
+
+"status":null,
+
+"date":null,
+
+"subcontractor":"Carlos",
+
+"limit":null
+
+}
+
+Return ONLY JSON.
 
 `,
 
@@ -131,14 +290,27 @@ response
 
 if(
 
-result.type!=="text"
+result.type
+!=="text"
 
 ){
 
 return{
 
 intent:
-"unknown"
+"unknown",
+
+projectName:null,
+
+projectId:null,
+
+status:null,
+
+date:null,
+
+subcontractor:null,
+
+limit:null
 
 };
 
@@ -163,20 +335,78 @@ text=text
 
 .trim();
 
-return JSON.parse(
+console.log(
+
+"Claude Raw:",
+
 text
+
 );
 
-}catch(error){
+const parsed=
 
-console.error(
-error
+JSON.parse(
+text
 );
 
 return{
 
 intent:
-"unknown"
+parsed.intent
+??"unknown",
+
+projectName:
+parsed.projectName
+??null,
+
+projectId:
+parsed.projectId
+??null,
+
+status:
+parsed.status
+??null,
+
+date:
+parsed.date
+??null,
+
+subcontractor:
+parsed.subcontractor
+??null,
+
+limit:
+parsed.limit
+??null
+
+};
+
+}catch(error){
+
+console.error(
+
+"Claude Error:",
+
+error
+
+);
+
+return{
+
+intent:
+"unknown",
+
+projectName:null,
+
+projectId:null,
+
+status:null,
+
+date:null,
+
+subcontractor:null,
+
+limit:null
 
 };
 

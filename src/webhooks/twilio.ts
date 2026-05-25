@@ -29,6 +29,143 @@ from "../clients/boltedIronClient";
 export const twilioRouter=
 Router();
 
+function formatDate(
+
+date:any
+
+){
+
+if(
+!date
+){
+
+return "N/A";
+
+}
+
+try{
+
+return new Date(
+date
+)
+
+.toLocaleDateString(
+
+"en-US",
+
+{
+
+year:"numeric",
+
+month:"short",
+
+day:"numeric"
+
+}
+
+);
+
+}catch{
+
+return "N/A";
+
+}
+
+}
+
+function formatAssignments(
+
+data:any
+
+){
+
+if(
+!data
+){
+
+return "None";
+
+}
+
+const raw=
+
+data?.json
+
+||
+
+data
+
+||
+
+[];
+
+if(
+!Array.isArray(
+raw
+)
+){
+
+return "None";
+
+}
+
+if(
+!raw.length
+){
+
+return "None";
+
+}
+
+return raw
+
+.slice(
+0,
+5
+)
+
+.map(
+
+(x:any)=>{
+
+const sub=
+
+x.subcontractor;
+
+if(
+!sub
+){
+
+return "• Unknown";
+
+}
+
+return
+
+`• ${
+
+sub.companyName
+
+||
+
+sub.contactName
+
+||
+
+"Unknown"
+
+}`;
+
+}
+
+)
+
+.join(
+"\n"
+);
+
+}
+
 twilioRouter.post(
 
 "/whatsapp",
@@ -76,7 +213,9 @@ Access denied
 await saveMessage(
 
 from,
+
 "inbound",
+
 body
 
 );
@@ -91,9 +230,15 @@ await parseIntent(
 body
 );
 
+console.log(
+"Claude:",
+ai
+);
+
 if(
 
 ai.intent===
+
 "greeting"
 
 ){
@@ -107,45 +252,36 @@ reply=
 else if(
 
 ai.intent===
+
 "project_list"
 
 ){
 
-const filters:any={};
-
-if(
-ai.status
-){
-
-filters.status=
-ai.status;
-
-}
-
 const projects=
 
 await boltedIron
-.getProjects(
-filters
-);
+.getProjects({
 
-const list=
+status:
+ai.status,
 
-projects?.json
+date:
+ai.date,
 
-||
+limit:
+ai.limit,
 
-projects
+subcontractor:
+ai.subcontractor
 
-||
-
-[];
+});
 
 if(
-!list.length
+!projects.length
 ){
 
 reply=
+
 "No projects found.";
 
 }
@@ -154,26 +290,34 @@ else{
 
 reply=
 
-`Projects (${list.length})
+`Projects (${projects.length})
 
 `+
 
-list
-
-.slice(
-0,
-10
-)
+projects
 
 .map(
 
-(p:any)=>
+(
+p:any,
+i:number
+)=>
 
-`• ${p.name}`
+`${
+
+i+1
+
+}. ${
+
+p.name
+
+}`
 
 )
 
-.join("\n");
+.join(
+"\n"
+);
 
 }
 
@@ -182,6 +326,7 @@ list
 else if(
 
 ai.intent===
+
 "project_detail"
 
 ){
@@ -228,25 +373,31 @@ Address:
 ${project.address||"N/A"}
 
 Start:
-${project.startDate||"N/A"}
+${formatDate(
+project.startDate
+)}
 
 End:
-${project.endDate||"N/A"}
+${formatDate(
+project.endDate
+)}
 
 Subcontractors:
 
 ${
 
-JSON.stringify(
-assignments
-)
+formatAssignments(
 
-.slice(
-0,
-250
+assignments
+
 )
 
 }
+
+Project ID:
+
+${project.id}
+
 `;
 
 }
@@ -256,6 +407,7 @@ assignments
 else if(
 
 ai.intent===
+
 "project_checklist"
 
 ){
@@ -274,6 +426,7 @@ if(
 ){
 
 reply=
+
 "Project not found.";
 
 }
@@ -289,21 +442,55 @@ project.id
 
 );
 
+const items=
+
+checklist?.json
+
+||
+
+checklist
+
+||
+
+[];
+
 reply=
 
 `Checklist
 
 ${
 
-JSON.stringify(
-
-checklist
-
-)
+items
 
 .slice(
 0,
-900
+10
+)
+
+.map(
+
+(
+x:any
+)=>
+
+`• ${
+
+x.name
+
+||
+
+x.title
+
+||
+
+"Task"
+
+}`
+
+)
+
+.join(
+"\n"
 )
 
 }`;
@@ -335,7 +522,9 @@ reply=
 await saveMessage(
 
 from,
+
 "outbound",
+
 reply
 
 );
@@ -343,6 +532,7 @@ reply
 res.set(
 
 "Content-Type",
+
 "text/xml"
 
 );
@@ -371,7 +561,9 @@ error
 
 res
 .status(500)
-.send("Error");
+.send(
+"Error"
+);
 
 }
 
