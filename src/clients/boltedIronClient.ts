@@ -1,125 +1,104 @@
 import fetch from "node-fetch";
 
-interface TrpcResponse {
+interface TrpcResponse{
 
-  result?: {
+ result?:{
+  data?:any;
+ };
 
-    data?: any;
+ error?:any;
 
-  };
-
-  error?: any;
-
-  [key:string]:any;
+ [key:string]:any;
 
 }
 
 const QUERY_PROCEDURES=[
 
-  "projects.list",
-  "projects.get",
-  "projects.getByStatus",
+ "projects.list",
+ "projects.get",
+ "projects.getByStatus",
 
-  "subcontractors.list",
-  "subcontractors.get",
+ "projects.getAssignmentsWithDetails",
 
-  "checklists.getByProject",
+ "subcontractors.list",
+ "subcontractors.get",
 
-  "notes.getByProject",
+ "checklists.getByProject",
 
-  "files.list"
+ "notes.getByProject",
+
+ "files.list"
 
 ];
 
 async function callTrpc(
 
-  procedure:string,
+ procedure:string,
 
-  input:any={}
+ input:any={}
 
 ):Promise<any>{
 
-  const apiUrl=
+ const apiUrl=
+ process.env
+ .BOLTED_IRON_API_URL;
 
-  process.env
-  .BOLTED_IRON_API_URL;
+ const bearerToken=
+ process.env
+ .BOLTED_IRON_BEARER_TOKEN;
 
-  const bearerToken=
+ if(
+ !apiUrl||
+ !bearerToken
+ ){
 
-  process.env
-  .BOLTED_IRON_BEARER_TOKEN;
+ throw new Error(
+ "Missing BIH Variables"
+ );
 
-  if(
+ }
 
-    !apiUrl ||
+ const isQuery=
 
-    !bearerToken
+ QUERY_PROCEDURES
+ .includes(
+ procedure
+ );
 
-  ){
+ let url=
+ `${apiUrl}/${procedure}`;
 
-    throw new Error(
+ const headers:any={
 
-      "Missing BIH Variables"
+ Authorization:
+ `Bearer ${bearerToken}`,
 
-    );
+ "Content-Type":
+ "application/json"
 
-  }
+ };
 
-  console.log(
+ const options:any={
+ headers
+ };
 
-    `[BIH] Calling ${procedure}...`
-
-  );
-
-  const isQuery=
-
-  QUERY_PROCEDURES
-  .includes(
-    procedure
-  );
-
-  let url=
-
-  `${apiUrl}/${procedure}`;
-
-  const headers:any={
-
-    Authorization:
-    `Bearer ${bearerToken}`,
-
-    "Content-Type":
-    "application/json"
-
-  };
-
-  const options:any={
-
-    headers
-
-  };
-
-  if(
- isQuery
-){
+ if(isQuery){
 
  options.method=
  "GET";
 
  if(
-
- Object.keys(
- input
- ).length
-
+ Object.keys(input)
+ .length
  ){
 
-  url+=
+ url+=
 
  `?input=${encodeURIComponent(
 
  JSON.stringify({
 
-  json:input
+ json:input
 
  })
 
@@ -127,342 +106,234 @@ async function callTrpc(
 
  }
 
-}
+ }
 
-  else{
+ else{
 
-    options.method=
-    "POST";
+ options.method=
+ "POST";
 
-    options.body=
+ options.body=
 
-    JSON.stringify(
-      input
-    );
+ JSON.stringify(
+ input
+ );
 
-  }
+ }
 
-  const response=
+ console.log(
+ `[BIH] Calling ${procedure}...`
+ );
 
-  await fetch(
+ const response=
 
-    url,
+ await fetch(
+ url,
+ options
+ );
 
-    options
+ const raw=
 
-  );
+ await response
+ .text();
 
-  console.log(
+ console.log(
+ `[BIH] ${procedure} Status:`,
+ response.status
+ );
 
-    `[BIH] ${procedure} Status:`,
+ if(
+ !response.ok
+ ){
 
-    response.status
+ let error=
 
-  );
+ response.statusText;
 
-  const raw=
+ try{
 
-  await response.text();
+ const parsed=
+ JSON.parse(raw);
 
-  console.log(
+ error=
 
-    `[BIH] ${procedure} Response:`,
+ parsed
+ ?.error
+ ?.json
+ ?.message
 
-    raw.substring(
-      0,
-      200
-    )
+ ||
 
-  );
+ error;
 
-  if(
-    !response.ok
-  ){
+ }catch{}
 
-    let errorMessage=
+ throw new Error(
 
-    response
-    .statusText;
-
-    try{
-
-      const error=
-
-      JSON.parse(
-        raw
-      );
-
-      errorMessage=
-
-      error
-      ?.error
-      ?.json
-      ?.message
-
-      ||
-
-      errorMessage;
-
-    }
-
-    catch{}
-
-    throw new Error(
-
-      `BIH Error:
+ `${procedure}
 
 ${response.status}
 
-${errorMessage}`
+${error}`
 
-    );
+ );
 
-  }
+ }
 
-  const data=
+ const data=
+ JSON.parse(
+ raw
+ )as TrpcResponse;
 
-  JSON.parse(
-    raw
-  ) as TrpcResponse;
+ return(
 
-  return(
+ data
+ ?.result
+ ?.data
 
-    data
-    ?.result
-    ?.data
+ ||
 
-    ||
+ data
 
-    data
-
-  );
+ );
 
 }
 
 export const boltedIron={
 
-  getProjects(){
+ async getProjects(
 
-    return callTrpc(
+ filters:any={}
 
-      "projects.list"
+ ){
 
-    );
+ return callTrpc(
 
-  },
+ "projects.list",
 
-  getProject(
+ filters
 
-    projectId:number
+ );
 
-  ){
+ },
 
-    return callTrpc(
+ async searchProject(
 
-      "projects.get",
+ name:string
 
-      {
+ ){
 
-        id:
-        projectId
+ const response=
 
-      }
+ await this
+ .getProjects();
 
-    );
+ const list=
 
-  },
+ response
+ ?.json
 
-  getProjectsByStatus(
+ ||
 
-    status:string
+ response
 
-  ){
+ ||
 
-    return callTrpc(
+ [];
 
-      "projects.getByStatus",
+ return list.find(
 
-      {
+ (p:any)=>
 
-        status
+ p.name
 
-      }
+ ?.toLowerCase()
 
-    );
+ .includes(
 
-  },
+ name
+ .toLowerCase()
 
-  updateProjectStatus(
+ )
 
-    projectId:number,
+ );
 
-    status:string
+ },
 
-  ){
+ async getProject(
 
-    return callTrpc(
+ projectId:number
 
-      "projects.updateStatus",
+ ){
 
-      {
+ return callTrpc(
 
-        id:
-        projectId,
+ "projects.get",
 
-        status
+ {
 
-      }
+ id:
+ projectId
 
-    );
+ }
 
-  },
+ );
 
-  assignSubcontractor(
+ },
 
-    projectId:number,
+ async getAssignments(
 
-    subcontractorId:number,
+ projectId:number
 
-    role:string
+ ){
 
-  ){
+ return callTrpc(
 
-    return callTrpc(
+ "projects.getAssignmentsWithDetails",
 
-      "projects.addAssignment",
+ {
 
-      {
+ projectId
 
-        projectId,
+ }
 
-        subcontractorId,
+ );
 
-        role
+ },
 
-      }
+ async getChecklist(
 
-    );
+ projectId:number
 
-  },
+ ){
 
-  removeSubcontractor(
+ return callTrpc(
 
-    assignmentId:number
+ "checklists.getByProject",
 
-  ){
+ {
 
-    return callTrpc(
+ projectId
 
-      "projects.deleteAssignment",
+ }
 
-      {
+ );
 
-        id:
-        assignmentId
+ },
 
-      }
+ async getProjectsByStatus(
 
-    );
+ status:string
 
-  },
+ ){
 
-  getSubcontractors(){
+ return this
+ .getProjects({
 
-    return callTrpc(
+ status
 
-      "subcontractors.list"
+ });
 
-    );
-
-  },
-
-  getChecklistItems(
-
-    projectId:number
-
-  ){
-
-    return callTrpc(
-
-      "checklists.getByProject",
-
-      {
-
-        projectId
-
-      }
-
-    );
-
-  },
-
-  updateChecklistItem(
-
-    itemId:number,
-
-    completed:boolean
-
-  ){
-
-    return callTrpc(
-
-      "checklists.update",
-
-      {
-
-        id:
-        itemId,
-
-        completed
-
-      }
-
-    );
-
-  },
-
-  getProjectNotes(
-
-    projectId:number
-
-  ){
-
-    return callTrpc(
-
-      "notes.getByProject",
-
-      {
-
-        projectId
-
-      }
-
-    );
-
-  },
-
-  addProjectNote(
-
-    projectId:number,
-
-    content:string
-
-  ){
-
-    return callTrpc(
-
-      "notes.create",
-
-      {
-
-        projectId,
-
-        content
-
-      }
-
-    );
-
-  }
+ }
 
 };

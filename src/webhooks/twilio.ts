@@ -1,4 +1,5 @@
-import { Router } from "express";
+import { Router }
+from "express";
 
 import {
  saveMessage
@@ -29,6 +30,7 @@ export const twilioRouter=
 Router();
 
 twilioRouter.post(
+
 "/whatsapp",
 
 async(req,res)=>{
@@ -44,16 +46,6 @@ const body=
 
 req.body.Body
 ||"";
-
-console.log(
-"Sender:",
-from
-);
-
-console.log(
-"Message:",
-body
-);
 
 await ensureUserExists(
 from
@@ -71,17 +63,11 @@ if(
 
 return res.send(
 
-`
-<Response>
-
+`<Response>
 <Message>
-
-Access denied.
-
+Access denied
 </Message>
-
-</Response>
-`
+</Response>`
 
 );
 
@@ -90,41 +76,62 @@ Access denied.
 await saveMessage(
 
 from,
-
 "inbound",
-
 body
 
 );
 
-let reply=
+let reply="";
 
-"Emily Bot Ready 🚀";
+try{
 
-const message=
+const ai=
 
+await parseIntent(
 body
-.toLowerCase()
-.trim();
+);
 
 if(
 
-message
-==="projects"
+ai.intent===
+"greeting"
 
 ){
 
-try{
+reply=
+
+"Hello 👋 Emily Bot online.";
+
+}
+
+else if(
+
+ai.intent===
+"project_list"
+
+){
+
+const filters:any={};
+
+if(
+ai.status
+){
+
+filters.status=
+ai.status;
+
+}
 
 const projects=
 
 await boltedIron
-.getProjects();
+.getProjects(
+filters
+);
 
 const list=
 
-projects
-?.json
+projects?.json
 
 ||
 
@@ -135,13 +142,10 @@ projects
 [];
 
 if(
-
 !list.length
-
 ){
 
 reply=
-
 "No projects found.";
 
 }
@@ -150,43 +154,26 @@ else{
 
 reply=
 
+`Projects (${list.length})
+
+`+
+
 list
 
 .slice(
 0,
-5
+10
 )
 
 .map(
 
-(
-project:any
-)=>
+(p:any)=>
 
-`📍 ${project.name}
-
-ID:
-${project.id}`
+`• ${p.name}`
 
 )
 
-.join(
-
-"\n\n"
-
-);
-
-}
-
-}catch(error){
-
-console.error(
-error
-);
-
-reply=
-
-"Could not fetch projects.";
+.join("\n");
 
 }
 
@@ -194,73 +181,23 @@ reply=
 
 else if(
 
-message
-.startsWith(
-"project "
-)
+ai.intent===
+"project_detail"
 
 ){
-
-try{
-
-const id=
-
-Number(
-
-message
-.replace(
-"project ",
-""
-)
-
-);
 
 const project=
 
 await boltedIron
-.getProject(
-id
+.searchProject(
+
+ai.projectName
+
 );
 
-const data=
-
-project
-?.json
-
-||
-
-project;
-
-reply=
-
-`
-📍 ${
-data.name
-||
-
-"Unknown"
-}
-
-🏢 ${
-data.address
-||
-
-"N/A"
-}
-
-📊 ${
-data.status
-||
-
-"N/A"
-}
-`;
-
-}catch(error){
-
-console.error(
-error
-);
+if(
+!project
+){
 
 reply=
 
@@ -268,62 +205,110 @@ reply=
 
 }
 
-}
-
 else{
 
-try{
+const assignments=
 
-const aiResponse=
+await boltedIron
+.getAssignments(
 
-await parseIntent(
-body
+project.id
+
 );
-
-if(
-
-aiResponse.intent
-==="greeting"
-
-){
-
-reply=
-
-"Hello 👋 Emily Bot is online.";
-
-}
-
-else if(
-
-aiResponse.intent
-==="project_query"
-
-){
 
 reply=
 
 `
-Try:
+📍 ${project.name}
 
-Projects
+Status:
+${project.status||"N/A"}
 
-or
+Address:
+${project.address||"N/A"}
 
-Project 1680001
+Start:
+${project.startDate||"N/A"}
+
+End:
+${project.endDate||"N/A"}
+
+Subcontractors:
+
+${
+
+JSON.stringify(
+assignments
+)
+
+.slice(
+0,
+250
+)
+
+}
 `;
+
+}
 
 }
 
 else if(
 
-aiResponse.intent
-==="status_update"
+ai.intent===
+"project_checklist"
 
 ){
 
+const project=
+
+await boltedIron
+.searchProject(
+
+ai.projectName
+
+);
+
+if(
+!project
+){
+
+reply=
+"Project not found.";
+
+}
+
+else{
+
+const checklist=
+
+await boltedIron
+.getChecklist(
+
+project.id
+
+);
+
 reply=
 
-"Project status update capability detected.";
+`Checklist
+
+${
+
+JSON.stringify(
+
+checklist
+
+)
+
+.slice(
+0,
+900
+)
+
+}`;
+
+}
 
 }
 
@@ -331,34 +316,26 @@ else{
 
 reply=
 
-"I could not understand that request.";
+"I could not understand.";
 
 }
 
 }catch(error){
 
 console.error(
-
-"Claude Error:",
-
 error
-
 );
 
 reply=
 
-"Emily AI temporarily unavailable.";
-
-}
+"Emily AI unavailable.";
 
 }
 
 await saveMessage(
 
 from,
-
 "outbound",
-
 reply
 
 );
@@ -366,7 +343,6 @@ reply
 res.set(
 
 "Content-Type",
-
 "text/xml"
 
 );
@@ -390,18 +366,12 @@ ${reply}
 }catch(error){
 
 console.error(
-
-"Webhook Failed:",
-
 error
-
 );
 
 res
 .status(500)
-.send(
-"Error"
-);
+.send("Error");
 
 }
 

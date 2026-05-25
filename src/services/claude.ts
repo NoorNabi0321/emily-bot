@@ -1,100 +1,185 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({
- apiKey: process.env.ANTHROPIC_API_KEY
+const client=new Anthropic({
+
+ apiKey:
+ process.env
+ .ANTHROPIC_API_KEY
+
 });
 
 export async function parseIntent(
+
  message:string
+
 ){
 
- try{
+try{
 
- const response =
- await client.messages.create({
+const response=
 
- model:"claude-sonnet-4-5",
+await client
+.messages
+.create({
 
- max_tokens:100,
+model:
+"claude-sonnet-4-20250514",
 
- system:`
+max_tokens:
+200,
+
+system:`
+
 You are Emily Bot.
 
-Classify messages.
+Extract project operations.
 
-Allowed intents:
+Return ONLY JSON.
 
-greeting
-project_query
-status_update
-help
-unknown
+Schema:
 
-Return ONLY valid JSON.
+{
 
-Do NOT use markdown.
+"intent":"greeting|project_list|project_detail|project_checklist|status_update|unknown",
 
-Do NOT use \`\`\`json.
+"projectName":null,
 
-Example:
+"projectId":null,
 
-{"intent":"greeting"}
+"status":null,
+
+"date":null,
+
+"subcontractor":null
+
+}
+
+Examples:
+
+"Hello Emily"
+
+{
+
+"intent":"greeting"
+
+}
+
+"Show fabrication projects"
+
+{
+
+"intent":"project_list",
+
+"status":"Fabrication"
+
+}
+
+"Show projects May 20"
+
+{
+
+"intent":"project_list",
+
+"date":"May 20"
+
+}
+
+"Tell me about Eastburn"
+
+{
+
+"intent":"project_detail",
+
+"projectName":"Eastburn"
+
+}
+
+"Checklist Eastburn"
+
+{
+
+"intent":"project_checklist",
+
+"projectName":"Eastburn"
+
+}
+
+No markdown.
+
+No code block.
+
 `,
 
- messages:[
- {
- role:"user",
- content:message
- }
- ]
+messages:[
 
- });
+{
 
- const result =
- response.content[0];
+role:"user",
 
- if(
- result.type!=="text"
- ){
+content:message
 
- return {
- intent:"unknown"
- };
+}
 
- }
+]
 
- let text =
- result.text.trim();
+});
 
- console.log(
- "Claude Raw:",
- text
- );
+const result=
 
- text =
- text
- .replace(/```json/g,"")
- .replace(/```/g,"")
- .trim();
+response
+.content[0];
 
- return JSON.parse(
- text
- );
+if(
 
- }catch(error){
+result.type!=="text"
 
- console.error(
- "Claude Error:",
- error
- );
+){
 
- return {
+return{
 
- intent:
- "unknown"
+intent:
+"unknown"
 
- };
+};
 
- }
+}
+
+let text=
+
+result.text
+.trim();
+
+text=text
+
+.replace(
+/```json/g,
+""
+)
+
+.replace(
+/```/g,
+""
+)
+
+.trim();
+
+return JSON.parse(
+text
+);
+
+}catch(error){
+
+console.error(
+error
+);
+
+return{
+
+intent:
+"unknown"
+
+};
+
+}
 
 }
