@@ -3,6 +3,11 @@ import dotenv from "dotenv";
 
 import { twilioRouter } from "./webhooks/twilio";
 
+import {
+ boltedIron
+}
+from "./clients/boltedIronClient";
+
 // Uncomment after creating middleware/twilioAuth.ts
 // import { verifyTwilio } from "./middleware/twilioAuth";
 
@@ -47,6 +52,50 @@ after creating Twilio auth middleware
 const PORT = Number(process.env.PORT) || 3000;
 
 console.log("Server Starting...");
+
+async function
+testBIH(){
+
+ try{
+
+ console.log(
+ "Testing BIH..."
+ );
+
+ const projects=
+
+ await boltedIron
+ .getProjects();
+
+ console.log(
+
+ "BIH Connected"
+
+ );
+
+ console.log(
+ projects
+ ?.length
+ ??
+
+ 0
+ );
+
+ }catch(error){
+
+ console.error(
+
+ "BIH Failed:",
+
+ error
+
+ );
+
+ }
+
+}
+
+testBIH();
 
 app.listen(PORT, () => {
   console.log(`Emily Bot running on ${PORT}`);
