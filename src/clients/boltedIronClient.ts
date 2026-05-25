@@ -1,157 +1,466 @@
-// emily-bot/src/clients/boltedIronClient.ts
-
 import fetch from "node-fetch";
 
 interface TrpcResponse {
+
   result?: {
+
     data?: any;
+
   };
+
   error?: any;
-  [key: string]: any;
+
+  [key:string]:any;
+
 }
 
-/**
- * Call tRPC procedure with Bearer token authentication
- */
+const QUERY_PROCEDURES=[
+
+  "projects.list",
+  "projects.get",
+  "projects.getByStatus",
+
+  "subcontractors.list",
+  "subcontractors.get",
+
+  "checklists.getByProject",
+
+  "notes.getByProject",
+
+  "files.list"
+
+];
+
 async function callTrpc(
-  procedure: string,
-  input: any
-): Promise<any> {
-  const apiUrl = process.env.BOLTED_IRON_API_URL;
-  const bearerToken = process.env.BOLTED_IRON_BEARER_TOKEN;
 
-  if (!apiUrl || !bearerToken) {
+  procedure:string,
+
+  input:any={}
+
+):Promise<any>{
+
+  const apiUrl=
+
+  process.env
+  .BOLTED_IRON_API_URL;
+
+  const bearerToken=
+
+  process.env
+  .BOLTED_IRON_BEARER_TOKEN;
+
+  if(
+
+    !apiUrl ||
+
+    !bearerToken
+
+  ){
+
     throw new Error(
-      "Missing BOLTED_IRON_API_URL or BOLTED_IRON_BEARER_TOKEN"
+
+      "Missing BIH Variables"
+
     );
+
   }
 
-  console.log(`[BIH] Calling ${procedure}...`);
+  console.log(
 
-  const response = await fetch(`${apiUrl}/${procedure}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${bearerToken}`,
-    },
-    body: JSON.stringify(input),
-  });
+    `[BIH] Calling ${procedure}...`
 
-  console.log(`[BIH] ${procedure} - Status: ${response.status}`);
+  );
 
-  const raw = await response.text();
-  console.log(`[BIH] ${procedure} - Response:`, raw.substring(0, 200));
+  const isQuery=
 
-  if (!response.ok) {
-    const errorData = JSON.parse(raw);
-    const errorMsg = errorData?.error?.json?.message || response.statusText;
-    throw new Error(`BIH Error calling ${procedure}: ${response.status} - ${errorMsg}`);
+  QUERY_PROCEDURES
+  .includes(
+    procedure
+  );
+
+  let url=
+
+  `${apiUrl}/${procedure}`;
+
+  const headers:any={
+
+    Authorization:
+    `Bearer ${bearerToken}`,
+
+    "Content-Type":
+    "application/json"
+
+  };
+
+  const options:any={
+
+    headers
+
+  };
+
+  if(
+    isQuery
+  ){
+
+    options.method=
+    "GET";
+
+    if(
+
+      Object.keys(
+        input
+      ).length
+
+    ){
+
+      url+=
+
+      `?input=${encodeURIComponent(
+
+        JSON.stringify(
+          input
+        )
+
+      )}`;
+
+    }
+
   }
 
-  const data = JSON.parse(raw) as TrpcResponse;
+  else{
 
-  // tRPC returns { result: { data: ... } }
-  if (data.result?.data) {
-    return data.result.data;
+    options.method=
+    "POST";
+
+    options.body=
+
+    JSON.stringify(
+      input
+    );
+
   }
 
-  return data;
+  const response=
+
+  await fetch(
+
+    url,
+
+    options
+
+  );
+
+  console.log(
+
+    `[BIH] ${procedure} Status:`,
+
+    response.status
+
+  );
+
+  const raw=
+
+  await response.text();
+
+  console.log(
+
+    `[BIH] ${procedure} Response:`,
+
+    raw.substring(
+      0,
+      200
+    )
+
+  );
+
+  if(
+    !response.ok
+  ){
+
+    let errorMessage=
+
+    response
+    .statusText;
+
+    try{
+
+      const error=
+
+      JSON.parse(
+        raw
+      );
+
+      errorMessage=
+
+      error
+      ?.error
+      ?.json
+      ?.message
+
+      ||
+
+      errorMessage;
+
+    }
+
+    catch{}
+
+    throw new Error(
+
+      `BIH Error:
+
+${response.status}
+
+${errorMessage}`
+
+    );
+
+  }
+
+  const data=
+
+  JSON.parse(
+    raw
+  ) as TrpcResponse;
+
+  return(
+
+    data
+    ?.result
+    ?.data
+
+    ||
+
+    data
+
+  );
+
 }
 
-export const boltedIron = {
-  /**
-   * Get all projects
-   */
-  async getProjects() {
-    return callTrpc("projects.list", {});
+export const boltedIron={
+
+  getProjects(){
+
+    return callTrpc(
+
+      "projects.list"
+
+    );
+
   },
 
-  /**
-   * Get project by ID
-   */
-  async getProject(projectId: number) {
-    return callTrpc("projects.get", { id: projectId });
+  getProject(
+
+    projectId:number
+
+  ){
+
+    return callTrpc(
+
+      "projects.get",
+
+      {
+
+        id:
+        projectId
+
+      }
+
+    );
+
   },
 
-  /**
-   * Get projects by status
-   */
-  async getProjectsByStatus(status: string) {
-    return callTrpc("projects.getByStatus", { status });
+  getProjectsByStatus(
+
+    status:string
+
+  ){
+
+    return callTrpc(
+
+      "projects.getByStatus",
+
+      {
+
+        status
+
+      }
+
+    );
+
   },
 
-  /**
-   * Update project status
-   */
-  async updateProjectStatus(projectId: number, status: string) {
-    return callTrpc("projects.updateStatus", {
-      id: projectId,
-      status,
-    });
+  updateProjectStatus(
+
+    projectId:number,
+
+    status:string
+
+  ){
+
+    return callTrpc(
+
+      "projects.updateStatus",
+
+      {
+
+        id:
+        projectId,
+
+        status
+
+      }
+
+    );
+
   },
 
-  /**
-   * Assign subcontractor to project
-   */
-  async assignSubcontractor(
-    projectId: number,
-    subcontractorId: number,
-    role: string
-  ) {
-    return callTrpc("projects.addAssignment", {
-      projectId,
-      subcontractorId,
-      role,
-    });
+  assignSubcontractor(
+
+    projectId:number,
+
+    subcontractorId:number,
+
+    role:string
+
+  ){
+
+    return callTrpc(
+
+      "projects.addAssignment",
+
+      {
+
+        projectId,
+
+        subcontractorId,
+
+        role
+
+      }
+
+    );
+
   },
 
-  /**
-   * Remove subcontractor from project
-   */
-  async removeSubcontractor(assignmentId: number) {
-    return callTrpc("projects.deleteAssignment", {
-      id: assignmentId,
-    });
+  removeSubcontractor(
+
+    assignmentId:number
+
+  ){
+
+    return callTrpc(
+
+      "projects.deleteAssignment",
+
+      {
+
+        id:
+        assignmentId
+
+      }
+
+    );
+
   },
 
-  /**
-   * Get all subcontractors
-   */
-  async getSubcontractors() {
-    return callTrpc("subcontractors.list", {});
+  getSubcontractors(){
+
+    return callTrpc(
+
+      "subcontractors.list"
+
+    );
+
   },
 
-  /**
-   * Get checklist items for a project
-   */
-  async getChecklistItems(projectId: number) {
-    return callTrpc("checklists.getByProject", { projectId });
+  getChecklistItems(
+
+    projectId:number
+
+  ){
+
+    return callTrpc(
+
+      "checklists.getByProject",
+
+      {
+
+        projectId
+
+      }
+
+    );
+
   },
 
-  /**
-   * Update checklist item status
-   */
-  async updateChecklistItem(itemId: number, completed: boolean) {
-    return callTrpc("checklists.update", {
-      id: itemId,
-      completed,
-    });
+  updateChecklistItem(
+
+    itemId:number,
+
+    completed:boolean
+
+  ){
+
+    return callTrpc(
+
+      "checklists.update",
+
+      {
+
+        id:
+        itemId,
+
+        completed
+
+      }
+
+    );
+
   },
 
-  /**
-   * Get project notes
-   */
-  async getProjectNotes(projectId: number) {
-    return callTrpc("notes.getByProject", { projectId });
+  getProjectNotes(
+
+    projectId:number
+
+  ){
+
+    return callTrpc(
+
+      "notes.getByProject",
+
+      {
+
+        projectId
+
+      }
+
+    );
+
   },
 
-  /**
-   * Add note to project
-   */
-  async addProjectNote(projectId: number, content: string) {
-    return callTrpc("notes.create", {
-      projectId,
-      content,
-    });
-  },
+  addProjectNote(
+
+    projectId:number,
+
+    content:string
+
+  ){
+
+    return callTrpc(
+
+      "notes.create",
+
+      {
+
+        projectId,
+
+        content
+
+      }
+
+    );
+
+  }
+
 };
