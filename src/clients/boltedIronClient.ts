@@ -1,313 +1,157 @@
+// emily-bot/src/clients/boltedIronClient.ts
+
 import fetch from "node-fetch";
 
-interface SessionData {
-
-  sessionCookie:string;
-
-  expiresAt:number;
-
-}
-
-interface TrpcResponse{
-
-  result?:{
-
-    data?:any;
-
+interface TrpcResponse {
+  result?: {
+    data?: any;
   };
-
-  sessionCookie?:string;
-
-  error?:any;
-
-  [key:string]:any;
-
+  error?: any;
+  [key: string]: any;
 }
 
-let cache:
-SessionData|null=null;
-
-async function login(){
-
- console.log(
- "BIH URL:",
- process.env
- .BOLTED_IRON_API_URL
- );
-
- const response=
- await fetch(
-
- `${process.env.BOLTED_IRON_API_URL}/auth.login`,
-
- {
-
- method:"POST",
-
- headers:{
-
- "Content-Type":
- "application/json"
-
- },
-
- body:
- JSON.stringify({
-
- json:{
-
- email:
- process.env
- .BOLTED_IRON_BOT_EMAIL,
-
- password:
- process.env
- .BOLTED_IRON_BOT_PASSWORD
-
- }
-
- })
-
- }
-
- );
-
- console.log(
-
- "BIH Login Status:",
-
- response.status
-
- );
-
- const raw=
- await response.text();
-
- console.log(
-
- "BIH Login Raw:",
-
- raw
-
- );
-
- if(
- !response.ok
- ){
-
- throw new Error(
-
- `BIH Login Failed:
-${response.status}`
-
- );
-
- }
-
- const data=
- JSON.parse(
- raw
- ) as TrpcResponse;
-
- const cookie=
-
- data
- ?.sessionCookie
-
- ||
-
- data
- ?.result
- ?.data
- ?.sessionCookie
-
- ||
-
- null;
-
- if(
- !cookie
- ){
-
- throw new Error(
- "Session cookie missing"
- );
-
- }
-
- return cookie;
-
-}
-
-async function getSession(){
-
-  const now=
-  Date.now();
-
-  if(
-
-    cache &&
-
-    cache.expiresAt>
-    now
-
-  ){
-
-    return cache
-    .sessionCookie;
-
-  }
-
-  const session=
-  await login();
-
-  cache={
-
-    sessionCookie:
-    session,
-
-    expiresAt:
-
-    now+
-
-    (
-      23*
-      60*
-      60*
-      1000
-    )
-
-  };
-
-  return session;
-
-}
-
-async function trpc(
-
-  procedure:string,
-
-  input:any
-
-){
-
-  const session=
-  await getSession();
-
-  const response=
-  await fetch(
-
-    `${process.env.BOLTED_IRON_API_URL}/${procedure}`,
-
-    {
-
-      method:"POST",
-
-      headers:{
-
-        "Content-Type":
-        "application/json",
-
-        Cookie:
-        `session=${session}`
-
-      },
-
-      body:
-      JSON.stringify(
-        input
-      )
-
-    }
-
-  );
-
-  console.log(
-
-    "BIH Procedure:",
-
-    procedure,
-
-    response.status
-
-  );
-
-  const raw=
-  await response.text();
-
-  console.log(
-
-    "BIH Response:",
-
-    raw
-
-  );
-
-  if(
-    !response.ok
-  ){
-
+/**
+ * Call tRPC procedure with Bearer token authentication
+ */
+async function callTrpc(
+  procedure: string,
+  input: any
+): Promise<any> {
+  const apiUrl = process.env.BOLTED_IRON_API_URL;
+  const bearerToken = process.env.BOLTED_IRON_BEARER_TOKEN;
+
+  if (!apiUrl || !bearerToken) {
     throw new Error(
-
-      `BIH Error:
-${response.status}`
-
+      "Missing BOLTED_IRON_API_URL or BOLTED_IRON_BEARER_TOKEN"
     );
-
   }
 
-  const data=
-  JSON.parse(
-    raw
-  ) as TrpcResponse;
+  console.log(`[BIH] Calling ${procedure}...`);
 
-  return (
+  const response = await fetch(`${apiUrl}/${procedure}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${bearerToken}`,
+    },
+    body: JSON.stringify(input),
+  });
 
-    data
-    ?.result
-    ?.data
+  console.log(`[BIH] ${procedure} - Status: ${response.status}`);
 
-    ||
+  const raw = await response.text();
+  console.log(`[BIH] ${procedure} - Response:`, raw.substring(0, 200));
 
-    data
+  if (!response.ok) {
+    const errorData = JSON.parse(raw);
+    const errorMsg = errorData?.error?.json?.message || response.statusText;
+    throw new Error(`BIH Error calling ${procedure}: ${response.status} - ${errorMsg}`);
+  }
 
-  );
+  const data = JSON.parse(raw) as TrpcResponse;
 
+  // tRPC returns { result: { data: ... } }
+  if (data.result?.data) {
+    return data.result.data;
+  }
+
+  return data;
 }
 
-export const
-boltedIron={
-
-  async getProjects(){
-
-    return trpc(
-
-      "projects.list",
-
-      {}
-
-    );
-
+export const boltedIron = {
+  /**
+   * Get all projects
+   */
+  async getProjects() {
+    return callTrpc("projects.list", {});
   },
 
-  async getChecklist(
+  /**
+   * Get project by ID
+   */
+  async getProject(projectId: number) {
+    return callTrpc("projects.get", { id: projectId });
+  },
 
-    projectId:number
+  /**
+   * Get projects by status
+   */
+  async getProjectsByStatus(status: string) {
+    return callTrpc("projects.getByStatus", { status });
+  },
 
-  ){
+  /**
+   * Update project status
+   */
+  async updateProjectStatus(projectId: number, status: string) {
+    return callTrpc("projects.updateStatus", {
+      id: projectId,
+      status,
+    });
+  },
 
-    return trpc(
+  /**
+   * Assign subcontractor to project
+   */
+  async assignSubcontractor(
+    projectId: number,
+    subcontractorId: number,
+    role: string
+  ) {
+    return callTrpc("projects.addAssignment", {
+      projectId,
+      subcontractorId,
+      role,
+    });
+  },
 
-      "checklists.getByProject",
+  /**
+   * Remove subcontractor from project
+   */
+  async removeSubcontractor(assignmentId: number) {
+    return callTrpc("projects.deleteAssignment", {
+      id: assignmentId,
+    });
+  },
 
-      {
+  /**
+   * Get all subcontractors
+   */
+  async getSubcontractors() {
+    return callTrpc("subcontractors.list", {});
+  },
 
-        projectId
+  /**
+   * Get checklist items for a project
+   */
+  async getChecklistItems(projectId: number) {
+    return callTrpc("checklists.getByProject", { projectId });
+  },
 
-      }
+  /**
+   * Update checklist item status
+   */
+  async updateChecklistItem(itemId: number, completed: boolean) {
+    return callTrpc("checklists.update", {
+      id: itemId,
+      completed,
+    });
+  },
 
-    );
+  /**
+   * Get project notes
+   */
+  async getProjectNotes(projectId: number) {
+    return callTrpc("notes.getByProject", { projectId });
+  },
 
-  }
-
+  /**
+   * Add note to project
+   */
+  async addProjectNote(projectId: number, content: string) {
+    return callTrpc("notes.create", {
+      projectId,
+      content,
+    });
+  },
 };
