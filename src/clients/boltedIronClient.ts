@@ -2,23 +2,25 @@ import fetch from "node-fetch";
 
 interface SessionData {
 
- sessionCookie:string;
+  sessionCookie:string;
 
- expiresAt:number;
+  expiresAt:number;
 
 }
 
 interface TrpcResponse{
 
- result?:{
+  result?:{
 
-  data?:any;
+    data?:any;
 
- };
+  };
 
- sessionCookie?:string;
+  sessionCookie?:string;
 
- [key:string]:any;
+  error?:any;
+
+  [key:string]:any;
 
 }
 
@@ -27,214 +29,285 @@ SessionData|null=null;
 
 async function login(){
 
- const response=
- await fetch(
+  console.log(
+    "BIH URL:",
+    process.env
+    .BOLTED_IRON_API_URL
+  );
 
- `${process.env.BOLTED_IRON_API_URL}/auth.login`,
+  const response=
+  await fetch(
 
- {
+    process.env
+    .BOLTED_IRON_API_URL!,
 
- method:"POST",
+    {
 
- headers:{
- "Content-Type":
- "application/json"
- },
+      method:"POST",
 
- body:JSON.stringify({
+      headers:{
 
- email:
- process.env
- .BOLTED_IRON_BOT_EMAIL,
+        "Content-Type":
+        "application/json"
 
- password:
- process.env
- .BOLTED_IRON_BOT_PASSWORD
+      },
 
- })
+      body:
+      JSON.stringify({
 
- }
+        procedure:
+        "auth.login",
 
- );
+        email:
+        process.env
+        .BOLTED_IRON_BOT_EMAIL,
 
- if(
- !response.ok
- ){
+        password:
+        process.env
+        .BOLTED_IRON_BOT_PASSWORD
 
- throw new Error(
+      })
 
- `BIH Login Failed:
- ${response.status}`
+    }
 
- );
+  );
 
- }
+  console.log(
 
-const data =
-(await response.json()) as TrpcResponse;
+    "BIH Login Status:",
 
- if(
- !data.sessionCookie
- ){
+    response.status
 
- throw new Error(
- "No session cookie"
- );
+  );
 
- }
+  const raw=
+  await response.text();
 
- return data
- .sessionCookie;
+  console.log(
+
+    "BIH Login Raw:",
+
+    raw
+
+  );
+
+  if(
+    !response.ok
+  ){
+
+    throw new Error(
+
+      `BIH Login Failed:
+${response.status}`
+
+    );
+
+  }
+
+  const data=
+  JSON.parse(
+    raw
+  ) as TrpcResponse;
+
+  const cookie=
+
+    data
+    ?.sessionCookie
+
+    ||
+
+    data
+    ?.result
+    ?.data
+    ?.sessionCookie
+
+    ||
+
+    null;
+
+  if(
+    !cookie
+  ){
+
+    throw new Error(
+      "Session cookie missing"
+    );
+
+  }
+
+  return cookie;
 
 }
 
 async function getSession(){
 
- const now=
- Date.now();
+  const now=
+  Date.now();
 
- if(
+  if(
 
- cache &&
+    cache &&
 
- cache.expiresAt>
- now
+    cache.expiresAt>
+    now
 
- ){
+  ){
 
- return cache
- .sessionCookie;
+    return cache
+    .sessionCookie;
 
- }
+  }
 
- const session=
- await login();
+  const session=
+  await login();
 
- cache={
+  cache={
 
- sessionCookie:
- session,
+    sessionCookie:
+    session,
 
- expiresAt:
+    expiresAt:
 
- now+
+    now+
 
- (
- 23*
- 60*
- 60*
- 1000
- )
+    (
+      23*
+      60*
+      60*
+      1000
+    )
 
- };
+  };
 
- return session;
+  return session;
 
 }
 
 async function trpc(
 
- procedure:string,
+  procedure:string,
 
- input:any
+  input:any
 
 ){
 
- const session=
- await getSession();
+  const session=
+  await getSession();
 
- const response=
- await fetch(
+  const response=
+  await fetch(
 
- `${process.env.BOLTED_IRON_API_URL}/${procedure}`,
+    `${process.env.BOLTED_IRON_API_URL}/${procedure}`,
 
- {
+    {
 
- method:"POST",
+      method:"POST",
 
- headers:{
+      headers:{
 
- "Content-Type":
- "application/json",
+        "Content-Type":
+        "application/json",
 
- Cookie:
- `session=${session}`
+        Cookie:
+        `session=${session}`
 
- },
+      },
 
- body:
- JSON.stringify(
- input
- )
+      body:
+      JSON.stringify(
+        input
+      )
 
- }
+    }
 
- );
+  );
 
- if(
- !response.ok
- ){
+  console.log(
 
- throw new Error(
+    "BIH Procedure:",
 
- `BIH Error:
- ${response.status}`
+    procedure,
 
- );
+    response.status
 
- }
+  );
 
-const data =
-(await response.json()) as TrpcResponse;
+  const raw=
+  await response.text();
 
- if(
- data.result
- ?.data
- ){
+  console.log(
 
- return data
- .result
- .data;
+    "BIH Response:",
 
- }
+    raw
 
- return data;
+  );
+
+  if(
+    !response.ok
+  ){
+
+    throw new Error(
+
+      `BIH Error:
+${response.status}`
+
+    );
+
+  }
+
+  const data=
+  JSON.parse(
+    raw
+  ) as TrpcResponse;
+
+  return (
+
+    data
+    ?.result
+    ?.data
+
+    ||
+
+    data
+
+  );
 
 }
 
 export const
 boltedIron={
 
- async getProjects(){
+  async getProjects(){
 
- return trpc(
+    return trpc(
 
- "projects.list",
+      "projects.list",
 
- {}
+      {}
 
- );
+    );
 
- },
+  },
 
- async getChecklist(
+  async getChecklist(
 
- projectId:number
+    projectId:number
 
- ){
+  ){
 
- return trpc(
+    return trpc(
 
- "checklists.getByProject",
+      "checklists.getByProject",
 
- {
+      {
 
- projectId
+        projectId
 
- }
+      }
 
- );
+    );
 
- }
+  }
 
 };
