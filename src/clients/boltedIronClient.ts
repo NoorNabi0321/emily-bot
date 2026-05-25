@@ -99,33 +99,35 @@ async function callTrpc(
   };
 
   if(
-    isQuery
-  ){
+ isQuery
+){
 
-    options.method=
-    "GET";
+ options.method=
+ "GET";
 
-    if(
+ if(
 
-      Object.keys(
-        input
-      ).length
+ Object.keys(
+ input
+ ).length
 
-    ){
+ ){
 
-      url+=
+  url+=
 
-      `?input=${encodeURIComponent(
+ `?input=${encodeURIComponent(
 
-        JSON.stringify(
-          input
-        )
+ JSON.stringify({
 
-      )}`;
+  json:input
 
-    }
+ })
 
-  }
+ )}`;
+
+ }
+
+}
 
   else{
 
