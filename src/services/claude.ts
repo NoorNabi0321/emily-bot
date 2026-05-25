@@ -13,45 +13,30 @@ export async function parseIntent(
  const response =
  await client.messages.create({
 
- model:"claude-sonnet-4-0",
+ model:"claude-sonnet-4-5",
 
  max_tokens:100,
 
- system:
-`
+ system:`
 You are Emily Bot.
 
-You classify WhatsApp project-management messages.
+Classify user messages.
 
-Allowed intents:
+Possible intents:
 
-help
+greeting
 project_query
 status_update
-greeting
+help
 unknown
 
-Rules:
+Examples:
 
-hello
-hi
-hey
+"hello" -> greeting
 
-→ greeting
+"show projects" -> project_query
 
-show projects
-list projects
-project details
-
-→ project_query
-
-change status
-update project
-mark done
-
-→ status_update
-
-If uncertain → unknown
+"mark project done" -> status_update
 
 Return ONLY JSON.
 
@@ -84,17 +69,8 @@ Example:
 
  }
 
- const text =
- result.text
- .trim();
-
- console.log(
- "Claude Raw:",
- text
- );
-
  return JSON.parse(
- text
+ result.text
  );
 
  }catch(error){
