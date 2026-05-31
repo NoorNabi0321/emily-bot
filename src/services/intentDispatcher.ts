@@ -14,6 +14,12 @@ import {
 }
 from "./commands/subcontractorReadCommands";
 
+import {
+  listProjectsBySubcontractor,
+  searchProjects,
+  advancedProjectSearch
+} from "./commands/projectSearchCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -39,6 +45,26 @@ export async function executeIntent(
         return getSubcontractorDetail(
             intent.subcontractorName || ""
         );
+    
+    case IntentType.PROJECT_LIST_BY_SUBCONTRACTOR:
+
+        return listProjectsBySubcontractor(
+            intent.subcontractorName || ""
+        );
+
+    case IntentType.PROJECT_SEARCH:
+
+        return searchProjects(
+            intent.searchTerm || ""
+        );
+
+    case IntentType.PROJECT_LIST_ADVANCED:
+
+        return advancedProjectSearch(
+            intent.filters || {}
+        );
+
+    
 
     default:
       return `

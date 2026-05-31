@@ -166,6 +166,45 @@ Output:
   "intent": "project_delete",
   "projectId": 1680001
 }
+
+User:
+Show Mendy projects
+
+Output:
+{
+  "intent":"project_list_by_subcontractor",
+  "subcontractorName":"Mendy"
+}
+
+User:
+Search Ross
+
+Output:
+{
+  "intent":"project_search",
+  "searchTerm":"Ross"
+}
+
+User:
+Find Franklin projects
+
+Output:
+{
+  "intent":"project_search",
+  "searchTerm":"Franklin"
+}
+
+User:
+Show fabrication projects assigned to Victor
+
+Output:
+{
+  "intent":"project_list_advanced",
+  "filters":{
+    "status":"Fabrication",
+    "subcontractorName":"Victor"
+  }
+}
 `
 ,
       messages: [
