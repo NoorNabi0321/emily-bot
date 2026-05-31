@@ -9,6 +9,11 @@ import {
   getProjectDetail
 } from "./commands/projectReadCommands";
 
+import {
+  getSubcontractorDetail
+}
+from "./commands/subcontractorReadCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -26,6 +31,14 @@ export async function executeIntent(
       return getProjectDetail(
         intent.projectName || ""
       );
+
+    case IntentType.GREETING:
+      return "Hello 👋 Emily Bot online.";
+
+    case IntentType.SUBCONTRACTOR_DETAIL:
+        return getSubcontractorDetail(
+            intent.subcontractorName || ""
+        );
 
     default:
       return `

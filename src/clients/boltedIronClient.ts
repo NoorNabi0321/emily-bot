@@ -272,6 +272,47 @@ function contains(
 
 export const boltedIron={
 
+async getSubcontractors() {
+  return callTrpc(
+    "subcontractors.list"
+  );
+},
+
+async getSubcontractor(
+  subcontractorId: number
+) {
+  return callTrpc(
+    "subcontractors.get",
+    {
+      id: subcontractorId
+    }
+  );
+},
+
+async searchSubcontractor(
+  name: string
+) {
+  const raw =
+    await this.getSubcontractors();
+
+  const subs =
+    raw?.json ||
+    raw ||
+    [];
+
+  return subs.find(
+    (s: any) =>
+      contains(
+        s.companyName,
+        name
+      ) ||
+      contains(
+        s.contactName,
+        name
+      )
+  );
+},
+
  async getProjects(
 
  filters:any={}
