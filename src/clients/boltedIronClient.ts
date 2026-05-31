@@ -622,6 +622,19 @@ async searchSubcontractor(
 
  });
 
- }
+ },
+
+ async getNotes(
+  projectId: number
+    ) {
+
+    return callTrpc(
+        "notes.getByProject",
+        {
+        projectId
+        }
+    );
+
+    }
 
 };

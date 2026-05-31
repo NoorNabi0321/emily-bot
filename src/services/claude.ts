@@ -205,6 +205,42 @@ Output:
     "subcontractorName":"Victor"
   }
 }
+
+User:
+Show checklist for Ross St
+
+Output:
+{
+  "intent":"checklist_create",
+  "projectName":"Ross St"
+}
+
+User:
+Show checklist for Franklin
+
+Output:
+{
+  "intent":"checklist_create",
+  "projectName":"Franklin"
+}
+
+User:
+Show notes for Ross St
+
+Output:
+{
+  "intent":"note_create",
+  "projectName":"Ross St"
+}
+
+User:
+Show notes for Franklin
+
+Output:
+{
+  "intent":"note_create",
+  "projectName":"Franklin"
+}
 `
 ,
       messages: [

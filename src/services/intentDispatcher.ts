@@ -20,6 +20,14 @@ import {
   advancedProjectSearch
 } from "./commands/projectSearchCommands";
 
+import {
+  getProjectChecklist
+} from "./commands/checklistReadCommands";
+
+import {
+  getProjectNotes
+} from "./commands/noteReadCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -64,7 +72,17 @@ export async function executeIntent(
             intent.filters || {}
         );
 
-    
+    case IntentType.CHECKLIST_CREATE:
+
+        return getProjectChecklist(
+            intent.projectName || ""
+        );
+
+    case IntentType.NOTE_CREATE:
+
+        return getProjectNotes(
+            intent.projectName || ""
+        );
 
     default:
       return `

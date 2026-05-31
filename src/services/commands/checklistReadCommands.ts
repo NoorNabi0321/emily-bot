@@ -1,0 +1,65 @@
+import { boltedIron } from "../../clients/boltedIronClient";
+
+export async function getProjectChecklist(
+  projectName: string
+): Promise<string> {
+
+  const project =
+    await boltedIron.searchProject(
+      projectName
+    );
+
+  if (!project) {
+
+    return `
+❌ PROJECT NOT FOUND
+
+Search:
+${projectName}
+`;
+
+  }
+
+  const checklist =
+    await boltedIron.getChecklist(
+      project.id
+    );
+
+  const items =
+    checklist?.json ||
+    checklist ||
+    [];
+
+  if (!items.length) {
+
+    return `
+📋 CHECKLIST
+
+Project:
+${project.name}
+
+No checklist items found.
+`;
+
+  }
+
+  return `
+📋 CHECKLIST
+
+Project:
+${project.name}
+
+${items
+  .slice(0, 25)
+  .map(
+    (item: any) =>
+      `• ${
+        item.title ||
+        item.name ||
+        "Task"
+      }`
+  )
+  .join("\n")}
+`;
+
+}
