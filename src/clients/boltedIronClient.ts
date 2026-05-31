@@ -132,9 +132,12 @@ async function callTrpc(
 
  }
 
- console.log(
- `[BIH] Calling ${procedure}...`
- );
+console.log("API URL:", url);
+
+console.log(
+  "TOKEN PREFIX:",
+  bearerToken?.substring(0, 10)
+);
 
  const response=
 
