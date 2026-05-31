@@ -52,20 +52,18 @@ No checklist items found.
 
   }
 
-  return `
+return `
 📋 CHECKLIST
 
 Project:
 ${project.name}
 
 ${items
-  .slice(0, 25)
+  .slice(0, 50)
   .map(
     (item: any) =>
-      `• ${
-        item.title ||
-        item.name ||
-        "Task"
+      `${item.isCompleted ? "✅" : "⬜"} ${
+        item.text
       }`
   )
   .join("\n")}
