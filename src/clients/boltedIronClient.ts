@@ -31,6 +31,8 @@ const QUERY_PROCEDURES=[
 
 ];
 
+
+
 async function callTrpc(
 
  procedure:string,
@@ -632,5 +634,18 @@ async getNotes(
   );
 
 },
+
+async markChecklistComplete(
+  checklistId: number
+) {
+
+  return callTrpc(
+    "checklists.markComplete",
+    {
+      id: checklistId
+    }
+  );
+
+}
 
 };

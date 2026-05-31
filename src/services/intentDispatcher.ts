@@ -28,6 +28,10 @@ import {
   getProjectNotes
 } from "./commands/noteReadCommands";
 
+import {
+  completeChecklistItem
+} from "./commands/checklistCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -82,6 +86,13 @@ export async function executeIntent(
 
         return getProjectNotes(
             intent.projectName || ""
+        );
+
+    case IntentType.CHECKLIST_COMPLETE:
+
+        return completeChecklistItem(
+            intent.projectName || "",
+            intent.itemTitle || ""
         );
 
     default:

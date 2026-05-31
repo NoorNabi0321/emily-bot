@@ -273,6 +273,26 @@ Output:
   "intent":"note_create",
   "projectName":"Franklin"
 }
+
+User:
+Mark Abc 1 complete for 57 tehama st
+
+Output:
+{
+  "intent":"checklist_complete",
+  "projectName":"57 tehama st",
+  "itemTitle":"Abc 1"
+}
+
+User:
+Mark 20' pipe rail complete for 104-106 emerson
+
+Output:
+{
+  "intent":"checklist_complete",
+  "projectName":"104-106 emerson",
+  "itemTitle":"20' pipe rail"
+}
 `
 ,
       messages: [
