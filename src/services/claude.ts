@@ -124,6 +124,38 @@ OUTPUT SCHEMA:
 EXAMPLES:
 
 User:
+Hello
+
+Output:
+{
+  "intent":"greeting"
+}
+
+User:
+Hi
+
+Output:
+{
+  "intent":"greeting"
+}
+
+User:
+Hi Emily
+
+Output:
+{
+  "intent":"greeting"
+}
+
+User:
+Hello Emily
+
+Output:
+{
+  "intent":"greeting"
+}
+
+User:
 Show all projects
 
 Output:

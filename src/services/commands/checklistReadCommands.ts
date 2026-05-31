@@ -25,6 +25,15 @@ ${projectName}
       project.id
     );
 
+    console.log(
+    "CHECKLIST RAW:",
+    JSON.stringify(
+        checklist,
+        null,
+        2
+    )
+    );
+
   const items =
     checklist?.json ||
     checklist ||

@@ -25,6 +25,15 @@ ${projectName}
       project.id
     );
 
+    console.log(
+    "NOTES RAW:",
+    JSON.stringify(
+        notes,
+        null,
+        2
+    )
+    );
+
   const items =
     notes?.json ||
     notes ||
