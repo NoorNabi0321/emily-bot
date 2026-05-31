@@ -121,18 +121,17 @@ async function callTrpc(
 
  }
 
- else{
+else {
 
- options.method=
- "POST";
+  options.method =
+    "POST";
 
- options.body=
+  options.body =
+    JSON.stringify({
+      json: input
+    });
 
- JSON.stringify(
- input
- );
-
- }
+}
 
 console.log("API URL:", url);
 
