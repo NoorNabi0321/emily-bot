@@ -9,6 +9,14 @@ export async function getProjectChecklist(
       projectName
     );
 
+  console.log(
+    "CHECKLIST PROJECT:",
+    {
+        id: project?.id,
+        name: project?.name
+    }
+    );
+
   if (!project) {
 
     return `
