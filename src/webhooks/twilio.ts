@@ -22,149 +22,17 @@ import {
 from "../services/claude";
 
 import {
- boltedIron
-}
-from "../clients/boltedIronClient";
+  validateIntent
+} from "../services/validators";
+
+import {
+  executeIntent
+} from "../services/intentDispatcher";
 
 export const twilioRouter=
 Router();
 
-function formatDate(
 
-date:any
-
-){
-
-if(
-!date
-){
-
-return "N/A";
-
-}
-
-try{
-
-return new Date(
-date
-)
-
-.toLocaleDateString(
-
-"en-US",
-
-{
-
-year:"numeric",
-
-month:"short",
-
-day:"numeric"
-
-}
-
-);
-
-}catch{
-
-return "N/A";
-
-}
-
-}
-
-function formatAssignments(
-
-data:any
-
-){
-
-if(
-!data
-){
-
-return "None";
-
-}
-
-const raw=
-
-data?.json
-
-||
-
-data
-
-||
-
-[];
-
-if(
-!Array.isArray(
-raw
-)
-){
-
-return "None";
-
-}
-
-if(
-!raw.length
-){
-
-return "None";
-
-}
-
-return raw
-
-.slice(
-0,
-5
-)
-
-.map(
-
-(x:any)=>{
-
-const sub=
-
-x.subcontractor;
-
-if(
-!sub
-){
-
-return "• Unknown";
-
-}
-
-return
-
-`• ${
-
-sub.companyName
-
-||
-
-sub.contactName
-
-||
-
-"Unknown"
-
-}`;
-
-}
-
-)
-
-.join(
-"\n"
-);
-
-}
 
 twilioRouter.post(
 
@@ -210,6 +78,15 @@ Access denied
 
 }
 
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 await saveMessage(
 
 from,
@@ -222,300 +99,43 @@ body
 
 let reply="";
 
-try{
+try {
 
-const ai=
+  const ai = await parseIntent(body);
 
-await parseIntent(
-body
-);
+  console.log("Claude:", ai);
 
-console.log(
-"Claude:",
-ai
-);
+  if (!ai.success || !ai.intent) {
+    reply = ai.error || "Could not understand request.";
+  } else {
 
-if(
+    const validation =
+      validateIntent(ai.intent);
 
-ai.intent===
+    if (!validation.valid) {
 
-"greeting"
+      reply =
+        validation.error ||
+        "Invalid request.";
 
-){
+    } else {
 
-reply=
+        reply =
+        await executeIntent(
+            ai.intent,
+            user
+        );
 
-"Hello 👋 Emily Bot online.";
+    }
 
-}
+  }
 
-else if(
+} catch (error) {
 
-ai.intent===
+  console.error(error);
 
-"project_list"
-
-){
-
-const projects=
-
-await boltedIron
-.getProjects({
-
-status:
-ai.status,
-
-date:
-ai.date,
-
-limit:
-ai.limit,
-
-subcontractor:
-ai.subcontractor
-
-});
-
-if(
-!projects.length
-){
-
-reply=
-
-"No projects found.";
-
-}
-
-else{
-
-reply=
-
-`Projects (${projects.length})
-
-`+
-
-projects
-
-.map(
-
-(
-p:any,
-i:number
-)=>
-
-`${
-
-i+1
-
-}. ${
-
-p.name
-
-}`
-
-)
-
-.join(
-"\n"
-);
-
-}
-
-}
-
-else if(
-
-ai.intent===
-
-"project_detail"
-
-){
-
-const project=
-
-await boltedIron
-.searchProject(
-
-ai.projectName
-
-);
-
-if(
-!project
-){
-
-reply=
-
-"Project not found.";
-
-}
-
-else{
-
-const assignments=
-
-await boltedIron
-.getAssignments(
-
-project.id
-
-);
-
-reply=
-
-`
-📍 ${project.name}
-
-Status:
-${project.status||"N/A"}
-
-Address:
-${project.address||"N/A"}
-
-Start:
-${formatDate(
-project.startDate
-)}
-
-End:
-${formatDate(
-project.endDate
-)}
-
-Subcontractors:
-
-${
-
-formatAssignments(
-
-assignments
-
-)
-
-}
-
-Project ID:
-
-${project.id}
-
-`;
-
-}
-
-}
-
-else if(
-
-ai.intent===
-
-"project_checklist"
-
-){
-
-const project=
-
-await boltedIron
-.searchProject(
-
-ai.projectName
-
-);
-
-if(
-!project
-){
-
-reply=
-
-"Project not found.";
-
-}
-
-else{
-
-const checklist=
-
-await boltedIron
-.getChecklist(
-
-project.id
-
-);
-
-const items=
-
-checklist?.json
-
-||
-
-checklist
-
-||
-
-[];
-
-reply=
-
-`Checklist
-
-${
-
-items
-
-.slice(
-0,
-10
-)
-
-.map(
-
-(
-x:any
-)=>
-
-`• ${
-
-x.name
-
-||
-
-x.title
-
-||
-
-"Task"
-
-}`
-
-)
-
-.join(
-"\n"
-)
-
-}`;
-
-}
-
-}
-
-else{
-
-reply=
-
-"I could not understand.";
-
-}
-
-}catch(error){
-
-console.error(
-error
-);
-
-reply=
-
-"Emily AI unavailable.";
+  reply =
+    "Emily AI unavailable.";
 
 }
 
@@ -544,7 +164,7 @@ res.send(
 
 <Message>
 
-${reply}
+${escapeXml(reply)}
 
 </Message>
 

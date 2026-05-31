@@ -1,415 +1,239 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { ParsedIntent, IntentType } from "../types/intent";
+import { PROJECT_STATUSES } from "../types/statuses";
 
-const client=new Anthropic({
-
- apiKey:
- process.env
- .ANTHROPIC_API_KEY
-
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY
 });
+
+export interface ClaudeIntentResponse {
+  success: boolean;
+  intent?: ParsedIntent;
+  error?: string;
+}
 
 export async function parseIntent(
+  message: string
+): Promise<ClaudeIntentResponse> {
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-5",
+      max_tokens: 500,
+      temperature: 0,
 
- message:string
-
-){
-
-try{
-
-const response=
-
-await client
-.messages
-.create({
-
-model:
-"claude-sonnet-4-5",
-
-max_tokens:
-250,
-
-system:`
-
+      system: `
 You are Emily Bot.
 
-Your job is extracting user intent
-for construction project management.
+Your ONLY job is extracting structured intents.
 
-Return ONLY VALID JSON.
+IMPORTANT RULES:
 
-Never explain.
+- Return ONLY valid JSON.
+- Never explain.
+- Never add markdown.
+- Never add code blocks.
+- Never include text before or after the JSON.
 
-Never add markdown.
+SUPPORTED INTENTS:
 
-Schema:
+project_list_all
+project_weekly_schedule
+project_list_by_status
+project_list_by_date
+project_detail
+
+subcontractor_detail
+
+project_list_unassigned
+project_list_archived
+
+project_create
+subcontractor_create
+checklist_create
+
+project_update_status
+project_update_date
+project_update_details
+
+assignment_update
+assignment_delete
+
+checklist_complete
+checklist_delete
+
+note_create
+
+project_delete
+
+project_search
+project_list_by_subcontractor
+project_list_advanced
+
+VALID PROJECT STATUSES:
+
+${PROJECT_STATUSES.join("\n")}
+
+STATUS NORMALIZATION:
+
+If user says:
+- completed
+- complete
+- finished
+- done
+
+Use:
+"Inspection Passed"
+
+If user says:
+- onsite
+- on site
+
+Use:
+"On-Site"
+
+If user says:
+- fabrication
+
+Use:
+"Fabrication"
+
+If user says:
+- drawings
+- shop drawings
+
+Use:
+"Shop Drawings"
+
+OUTPUT SCHEMA:
 
 {
-
-"intent":
-
-"greeting" |
-
-"project_list" |
-
-"project_detail" |
-
-"project_checklist" |
-
-"status_update" |
-
-"project_notes" |
-
-"unknown",
-
-"projectName":null,
-
-"projectId":null,
-
-"status":null,
-
-"date":null,
-
-"subcontractor":null,
-
-"limit":null
-
+  "intent": "",
+  "projectId": null,
+  "projectName": null,
+  "subcontractorId": null,
+  "subcontractorName": null,
+  "status": null,
+  "searchTerm": null,
+  "date": null,
+  "itemTitle": null,
+  "noteContent": null,
+  "role": null,
+  "filters": null
 }
 
-Rules:
-
-Project names:
-
-"Eastburn"
-
-"joralmon"
-
-"1677 Eastburn Ave"
-
-should become:
-
-{
-
-"intent":"project_detail",
-
-"projectName":"Eastburn"
-
-}
-
-Examples:
+EXAMPLES:
 
 User:
-
-"Hello Emily"
-
-Output:
-
-{
-
-"intent":"greeting",
-
-"projectName":null,
-
-"projectId":null,
-
-"status":null,
-
-"date":null,
-
-"subcontractor":null,
-
-"limit":null
-
-}
-
-User:
-
-"Show fabrication projects"
+Show all projects
 
 Output:
-
 {
-
-"intent":"project_list",
-
-"projectName":null,
-
-"projectId":null,
-
-"status":"Fabrication",
-
-"date":null,
-
-"subcontractor":null,
-
-"limit":null
-
+  "intent": "project_list_all"
 }
 
 User:
-
-"Projects of May 29"
+Show fabrication projects
 
 Output:
-
 {
-
-"intent":"project_list",
-
-"projectName":null,
-
-"projectId":null,
-
-"status":null,
-
-"date":"May 29",
-
-"subcontractor":null,
-
-"limit":null
-
+  "intent": "project_list_by_status",
+  "status": "Fabrication"
 }
 
 User:
-
-"5 onsite projects"
+Tell me about Eastburn
 
 Output:
-
 {
-
-"intent":"project_list",
-
-"projectName":null,
-
-"projectId":null,
-
-"status":"On-Site",
-
-"date":null,
-
-"subcontractor":null,
-
-"limit":5
-
+  "intent": "project_detail",
+  "projectName": "Eastburn"
 }
 
 User:
-
-"Tell me about Eastburn"
+Show Carlos projects
 
 Output:
-
 {
-
-"intent":"project_detail",
-
-"projectName":"Eastburn",
-
-"projectId":null,
-
-"status":null,
-
-"date":null,
-
-"subcontractor":null,
-
-"limit":null
-
+  "intent": "project_list_by_subcontractor",
+  "subcontractorName": "Carlos"
 }
 
 User:
-
-"Checklist Eastburn"
-
-Output:
-
-{
-
-"intent":"project_checklist",
-
-"projectName":"Eastburn",
-
-"projectId":null,
-
-"status":null,
-
-"date":null,
-
-"subcontractor":null,
-
-"limit":null
-
-}
-
-User:
-
-"Show Carlos projects"
+Delete project 1680001
 
 Output:
-
 {
-
-"intent":"project_list",
-
-"projectName":null,
-
-"projectId":null,
-
-"status":null,
-
-"date":null,
-
-"subcontractor":"Carlos",
-
-"limit":null
-
+  "intent": "project_delete",
+  "projectId": 1680001
 }
+`
+,
+      messages: [
+        {
+          role: "user",
+          content: message
+        }
+      ]
+    });
 
-Return ONLY JSON.
+    const result = response.content[0];
 
-`,
+    if (result.type !== "text") {
+      return {
+        success: false,
+        error: "Claude returned non-text response"
+      };
+    }
 
-messages:[
+    const text = result.text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-{
+    console.log("Claude Raw:", text);
 
-role:"user",
+    const parsed = JSON.parse(text);
 
-content:message
+    const intent: ParsedIntent = {
+      intent: parsed.intent as IntentType,
 
-}
+      projectId: parsed.projectId ?? undefined,
+      projectName: parsed.projectName ?? undefined,
 
-]
+      subcontractorId: parsed.subcontractorId ?? undefined,
+      subcontractorName: parsed.subcontractorName ?? undefined,
 
-});
+      status: parsed.status ?? undefined,
 
-const result=
+      searchTerm: parsed.searchTerm ?? undefined,
 
-response
-.content[0];
+      date: parsed.date ?? undefined,
 
-if(
+      itemTitle: parsed.itemTitle ?? undefined,
 
-result.type
-!=="text"
+      noteContent: parsed.noteContent ?? undefined,
 
-){
+      role: parsed.role ?? undefined,
 
-return{
+      updates: parsed.updates ?? undefined,
 
-intent:
-"unknown",
+      filters: parsed.filters ?? undefined,
 
-projectName:null,
+      confirmDelete: parsed.confirmDelete ?? false,
 
-projectId:null,
+      rawMessage: message
+    };
 
-status:null,
+    return {
+      success: true,
+      intent
+    };
+  } catch (error) {
+    console.error("Claude Error:", error);
 
-date:null,
-
-subcontractor:null,
-
-limit:null
-
-};
-
-}
-
-let text=
-
-result.text
-.trim();
-
-text=text
-
-.replace(
-/```json/g,
-""
-)
-
-.replace(
-/```/g,
-""
-)
-
-.trim();
-
-console.log(
-
-"Claude Raw:",
-
-text
-
-);
-
-const parsed=
-
-JSON.parse(
-text
-);
-
-return{
-
-intent:
-parsed.intent
-??"unknown",
-
-projectName:
-parsed.projectName
-??null,
-
-projectId:
-parsed.projectId
-??null,
-
-status:
-parsed.status
-??null,
-
-date:
-parsed.date
-??null,
-
-subcontractor:
-parsed.subcontractor
-??null,
-
-limit:
-parsed.limit
-??null
-
-};
-
-}catch(error){
-
-console.error(
-
-"Claude Error:",
-
-error
-
-);
-
-return{
-
-intent:
-"unknown",
-
-projectName:null,
-
-projectId:null,
-
-status:null,
-
-date:null,
-
-subcontractor:null,
-
-limit:null
-
-};
-
-}
-
+    return {
+      success: false,
+      error: "Failed to parse intent"
+    };
+  }
 }
