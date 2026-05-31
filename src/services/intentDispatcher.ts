@@ -32,6 +32,11 @@ import {
   completeChecklistItem
 } from "./commands/checklistCommands";
 
+import {
+  createProjectNote
+}
+from "./commands/noteCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -94,6 +99,13 @@ export async function executeIntent(
             intent.projectName || "",
             intent.itemTitle || ""
         );
+
+    case IntentType.NOTE_CREATE:
+
+      return createProjectNote(
+        intent.projectName || "",
+        intent.noteContent || ""
+      );
 
     default:
       return `

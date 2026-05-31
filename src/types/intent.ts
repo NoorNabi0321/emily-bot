@@ -49,7 +49,10 @@ export enum IntentType {
   PROJECT_LIST_ADVANCED =
     "project_list_advanced",
   
-    GREETING = "greeting"
+    GREETING = "greeting",
+
+    NOTE_LIST = "note_list",
+
 }
 
 export interface ParsedIntent {

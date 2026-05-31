@@ -56,6 +56,15 @@ ${itemTitle}
 
   }
 
+  console.log(
+  "CHECKLIST ITEM FOUND:",
+  JSON.stringify(
+    item,
+    null,
+    2
+  )
+);
+
   await boltedIron
     .markChecklistComplete(
       item.id

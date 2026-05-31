@@ -645,6 +645,22 @@ async markChecklistComplete(
     }
   );
 
-}
+},
+
+async createNote(
+  projectId: number,
+  content: string
+) {
+
+  return callTrpc(
+    "notes.create",
+    {
+      projectId,
+      content,
+      isAdminOnly: false
+    }
+  );
+
+},
 
 };

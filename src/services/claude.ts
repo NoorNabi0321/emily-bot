@@ -293,6 +293,46 @@ Output:
   "projectName":"104-106 emerson",
   "itemTitle":"20' pipe rail"
 }
+
+User:
+Show notes for Ross st
+
+Output:
+{
+  "intent":"note_list",
+  "projectName":"Ross st"
+}
+
+User:
+Show notes for 57 tehama st
+
+Output:
+{
+  "intent":"note_list",
+  "projectName":"57 tehama st"
+}
+
+User:
+Add note to Ross st:
+Material delivered today
+
+Output:
+{
+  "intent":"note_create",
+  "projectName":"Ross st",
+  "noteContent":"Material delivered today"
+}
+
+User:
+Add note to 57 tehama st:
+Inspection scheduled for Monday
+
+Output:
+{
+  "intent":"note_create",
+  "projectName":"57 tehama st",
+  "noteContent":"Inspection scheduled for Monday"
+}
 `
 ,
       messages: [
