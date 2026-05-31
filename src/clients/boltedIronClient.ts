@@ -23,9 +23,9 @@ const QUERY_PROCEDURES=[
  "subcontractors.list",
  "subcontractors.get",
 
- "checklists.getByProject",
+ "checklists.list",
 
- "notes.getByProject",
+ "notes.list",
 
  "files.list"
 
@@ -589,25 +589,18 @@ async searchSubcontractor(
 
  },
 
- async getChecklist(
+async getChecklist(
+  projectId: number
+) {
 
- projectId:number
+  return callTrpc(
+    "checklists.list",
+    {
+      projectId
+    }
+  );
 
- ){
-
- return callTrpc(
-
- "checklists.getByProject",
-
- {
-
- projectId
-
- }
-
- );
-
- },
+},
 
  async getProjectsByStatus(
 
@@ -624,17 +617,17 @@ async searchSubcontractor(
 
  },
 
- async getNotes(
+async getNotes(
   projectId: number
-    ) {
+) {
 
-    return callTrpc(
-        "notes.getByProject",
-        {
-        projectId
-        }
-    );
-
+  return callTrpc(
+    "notes.list",
+    {
+      projectId
     }
+  );
+
+},
 
 };
