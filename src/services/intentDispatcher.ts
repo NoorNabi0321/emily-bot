@@ -87,12 +87,6 @@ export async function executeIntent(
             intent.projectName || ""
         );
 
-    case IntentType.NOTE_CREATE:
-
-        return getProjectNotes(
-            intent.projectName || ""
-        );
-
     case IntentType.CHECKLIST_COMPLETE:
 
         return completeChecklistItem(
@@ -105,6 +99,12 @@ export async function executeIntent(
       return createProjectNote(
         intent.projectName || "",
         intent.noteContent || ""
+      );
+
+    case IntentType.NOTE_LIST:
+
+      return getProjectNotes(
+        intent.projectName || ""
       );
 
     default:
