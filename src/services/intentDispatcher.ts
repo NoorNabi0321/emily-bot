@@ -45,6 +45,12 @@ import {
   updateProjectDate
 } from "./commands/projectDateCommands";
 
+import {
+  assignSubcontractorToProject,
+  removeSubcontractorAssignment
+}
+from "./commands/assignmentCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -128,6 +134,20 @@ export async function executeIntent(
         intent.projectName || "",
         intent.updates || {}
       );
+
+      case IntentType.ASSIGNMENT_UPDATE:
+
+        return assignSubcontractorToProject(
+          intent.projectName || "",
+          intent.subcontractorName || ""
+        );
+
+      case IntentType.ASSIGNMENT_DELETE:
+
+        return removeSubcontractorAssignment(
+          intent.projectName || "",
+          intent.subcontractorName || ""
+        );
 
     default:
       return `

@@ -677,6 +677,36 @@ async updateProjectDates(
 
 },
 
+async assignSubcontractor(
+  projectId: number,
+  subcontractorId: number,
+  role?: string
+) {
+
+  return callTrpc(
+    "projects.assign",
+    {
+      projectId,
+      subcontractorId,
+      role
+    }
+  );
+
+},
+
+async removeAssignment(
+  assignmentId: number
+) {
+
+  return callTrpc(
+    "projects.removeAssignment",
+    {
+      assignmentId
+    }
+  );
+
+},
+
 async createNote(
   projectId: number,
   content: string

@@ -409,6 +409,36 @@ Output:
     "actualEndDate":"2026-08-10"
   }
 }
+
+User:
+Assign Victor to Ross st
+
+Output:
+{
+  "intent":"assignment_update",
+  "projectName":"Ross st",
+  "subcontractorName":"Victor"
+}
+
+User:
+Assign Mendy to 57 tehama st
+
+Output:
+{
+  "intent":"assignment_update",
+  "projectName":"57 tehama st",
+  "subcontractorName":"Mendy"
+}
+
+User:
+Remove Victor from Ross st
+
+Output:
+{
+  "intent":"assignment_delete",
+  "projectName":"Ross st",
+  "subcontractorName":"Victor"
+}
 `
 ,
       messages: [

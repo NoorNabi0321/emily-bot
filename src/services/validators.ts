@@ -151,6 +151,50 @@ export function validateIntent(
 
       break;
 
+    case IntentType.ASSIGNMENT_UPDATE:
+
+      if (!intent.projectName) {
+
+        return {
+          valid: false,
+          error: "Project name required"
+        };
+
+      }
+
+      if (!intent.subcontractorName) {
+
+        return {
+          valid: false,
+          error: "Subcontractor required"
+        };
+
+      }
+
+      break;
+
+      case IntentType.ASSIGNMENT_DELETE:
+
+        if (!intent.projectName) {
+
+          return {
+            valid: false,
+            error: "Project name required"
+          };
+
+        }
+
+        if (!intent.subcontractorName) {
+
+          return {
+            valid: false,
+            error: "Subcontractor required"
+          };
+
+        }
+
+        break;
+
   }
 
   return {
