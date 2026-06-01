@@ -333,6 +333,46 @@ Output:
   "projectName":"57 tehama st",
   "noteContent":"Inspection scheduled for Monday"
 }
+
+User:
+Mark 57 tehama st as On-Site
+
+Output:
+{
+  "intent":"project_update_status",
+  "projectName":"57 tehama st",
+  "status":"On-Site"
+}
+
+User:
+Mark Ross st as Installed
+
+Output:
+{
+  "intent":"project_update_status",
+  "projectName":"Ross st",
+  "status":"Installed"
+}
+
+User:
+Update Franklin status to Fabrication
+
+Output:
+{
+  "intent":"project_update_status",
+  "projectName":"Franklin",
+  "status":"Fabrication"
+}
+
+User:
+Change 57 tehama st status to Inspection Passed
+
+Output:
+{
+  "intent":"project_update_status",
+  "projectName":"57 tehama st",
+  "status":"Inspection Passed"
+}
 `
 ,
       messages: [

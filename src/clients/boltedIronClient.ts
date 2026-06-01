@@ -647,6 +647,21 @@ async markChecklistComplete(
 
 },
 
+async updateProjectStatus(
+  projectId: number,
+  status: string
+) {
+
+  return callTrpc(
+    "projects.updateStatus",
+    {
+      id: projectId,
+      status
+    }
+  );
+
+},
+
 async createNote(
   projectId: number,
   content: string

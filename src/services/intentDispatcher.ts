@@ -37,6 +37,10 @@ import {
 }
 from "./commands/noteCommands";
 
+import {
+  updateProjectStatus
+} from "./commands/projectStatusCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -105,6 +109,13 @@ export async function executeIntent(
 
       return getProjectNotes(
         intent.projectName || ""
+      );
+
+    case IntentType.PROJECT_UPDATE_STATUS:
+
+      return updateProjectStatus(
+        intent.projectName || "",
+        intent.status || ""
       );
 
     default:
