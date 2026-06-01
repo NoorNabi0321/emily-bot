@@ -118,6 +118,15 @@ ${projectName}
       }
     );
 
+  console.log(
+  "ASSIGNMENT FOUND:",
+  JSON.stringify(
+    assignment,
+    null,
+    2
+  )
+);
+
   if (!assignment) {
 
     return `
