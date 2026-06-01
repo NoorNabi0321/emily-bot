@@ -41,6 +41,10 @@ import {
   updateProjectStatus
 } from "./commands/projectStatusCommands";
 
+import {
+  updateProjectDate
+} from "./commands/projectDateCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -116,6 +120,13 @@ export async function executeIntent(
       return updateProjectStatus(
         intent.projectName || "",
         intent.status || ""
+      );
+
+    case IntentType.PROJECT_UPDATE_DATE:
+
+      return updateProjectDate(
+        intent.projectName || "",
+        intent.updates || {}
       );
 
     default:

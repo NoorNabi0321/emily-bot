@@ -662,6 +662,21 @@ async updateProjectStatus(
 
 },
 
+async updateProjectDates(
+  projectId: number,
+  data: Record<string, unknown>
+) {
+
+  return callTrpc(
+    "projects.update",
+    {
+      id: projectId,
+      data
+    }
+  );
+
+},
+
 async createNote(
   projectId: number,
   content: string

@@ -129,6 +129,28 @@ export function validateIntent(
 
       break;
 
+    case IntentType.PROJECT_UPDATE_DATE:
+
+      if (!intent.projectName) {
+
+        return {
+          valid: false,
+          error: "Project name required"
+        };
+
+      }
+
+      if (!intent.updates) {
+
+        return {
+          valid: false,
+          error: "Date update required"
+        };
+
+      }
+
+      break;
+
   }
 
   return {

@@ -373,6 +373,42 @@ Output:
   "projectName":"57 tehama st",
   "status":"Inspection Passed"
 }
+
+User:
+Change 57 tehama st start date to June 15 2026
+
+Output:
+{
+  "intent":"project_update_date",
+  "projectName":"57 tehama st",
+  "updates":{
+    "startDate":"2026-06-15"
+  }
+}
+
+User:
+Move Ross st estimated end date to July 1 2026
+
+Output:
+{
+  "intent":"project_update_date",
+  "projectName":"Ross st",
+  "updates":{
+    "estimatedEndDate":"2026-07-01"
+  }
+}
+
+User:
+Set Franklin actual end date to August 10 2026
+
+Output:
+{
+  "intent":"project_update_date",
+  "projectName":"89 Franklin",
+  "updates":{
+    "actualEndDate":"2026-08-10"
+  }
+}
 `
 ,
       messages: [
