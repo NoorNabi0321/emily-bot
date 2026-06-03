@@ -51,6 +51,11 @@ import {
 }
 from "./commands/assignmentCommands";
 
+import {
+  createChecklistItem
+}
+from "./commands/checklistCreateCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -147,6 +152,13 @@ export async function executeIntent(
         return removeSubcontractorAssignment(
           intent.projectName || "",
           intent.subcontractorName || ""
+        );
+
+      case IntentType.CHECKLIST_CREATE:
+
+        return createChecklistItem(
+          intent.projectName || "",
+          intent.itemTitle || ""
         );
 
     default:

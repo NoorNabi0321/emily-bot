@@ -723,4 +723,21 @@ async createNote(
 
 },
 
+async createChecklistItem(
+  projectId: number,
+  title: string,
+  description?: string
+) {
+
+  return callTrpc(
+    "checklists.create",
+    {
+      projectId,
+      title,
+      description
+    }
+  );
+
+}
+
 };

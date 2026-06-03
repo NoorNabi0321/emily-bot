@@ -439,6 +439,36 @@ Output:
   "projectName":"Ross st",
   "subcontractorName":"Victor"
 }
+
+User:
+Add checklist item Steel Delivery to 57 tehama st
+
+Output:
+{
+  "intent":"checklist_create",
+  "projectName":"57 tehama st",
+  "itemTitle":"Steel Delivery"
+}
+
+User:
+Create checklist item Inspection for Ross st
+
+Output:
+{
+  "intent":"checklist_create",
+  "projectName":"Ross st",
+  "itemTitle":"Inspection"
+}
+
+User:
+Add checklist item Material Order to Franklin
+
+Output:
+{
+  "intent":"checklist_create",
+  "projectName":"Franklin",
+  "itemTitle":"Material Order"
+}
 `
 ,
       messages: [
