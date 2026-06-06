@@ -64,37 +64,61 @@ ${projectName}
     )
     );
 
-  const totalItems =
-    checklist.length;
+const checklistItems =
+  checklist?.json || [];
 
-  const completedItems =
-    checklist.filter(
-      (item: any) =>
-        item.isCompleted
-    ).length;
+const noteItems =
+  notes?.json || [];
 
-  const pendingItems =
+const totalItems =
+  checklistItems.length;
+
+const completedItems =
+  checklistItems.filter(
+    (item:any) =>
+      item.isCompleted
+  ).length;
+
+const pendingItems =
     totalItems -
     completedItems;
 
-  const assignedSubs =
+const assignedSubs =
     assignments
-      .map(
+        .map(
         (a: any) =>
-          a.subcontractor
+            a.subcontractor
             ?.companyName
-      )
-      .filter(Boolean)
-      .join("\n• ");
+        )
+        .filter(Boolean)
+        .join("\n• ");
 
   const recentNotes =
-    notes
-      .slice(0, 3)
-      .map(
-        (n: any) =>
-          `• ${n.content}`
-      )
-      .join("\n");
+  noteItems
+    .slice(0, 3)
+    .map(
+      (n:any) =>
+        `• ${n.content}`
+    )
+    .join("\n");
+
+console.log(
+  "SUMMARY ASSIGNMENTS RAW:",
+  JSON.stringify(
+    assignments,
+    null,
+    2
+  )
+);
+
+console.log(
+  "SUMMARY PROJECT RAW:",
+  JSON.stringify(
+    projectInfo,
+    null,
+    2
+  )
+);
 
   return `
 📋 PROJECT SUMMARY
