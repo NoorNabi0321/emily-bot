@@ -66,6 +66,11 @@ import {
 }
 from "./commands/projectCreateCommands";
 
+import {
+  updateProjectDetails
+}
+from "./commands/projectUpdateCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -189,6 +194,13 @@ export async function executeIntent(
 
         return createProject(
           intent.projectName || ""
+        );
+
+      case IntentType.PROJECT_UPDATE_DETAILS:
+
+        return updateProjectDetails(
+          intent.projectName || "",
+          intent.updates || {}
         );
 
     default:

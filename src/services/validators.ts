@@ -252,6 +252,28 @@ export function validateIntent(
 
         break;
 
+      case IntentType.PROJECT_UPDATE_DETAILS:
+
+        if (!intent.projectName) {
+
+          return {
+            valid: false,
+            error: "Project name required"
+          };
+
+        }
+
+        if (!intent.updates) {
+
+          return {
+            valid: false,
+            error: "Update data required"
+          };
+
+        }
+
+        break;
+
   }
 
   return {

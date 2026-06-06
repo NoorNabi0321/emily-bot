@@ -553,6 +553,54 @@ Output:
   "intent":"project_create",
   "projectName":"77 Franklin Ave"
 }
+
+User:
+Set GC company of 80 vernon to Turner Construction
+
+Output:
+{
+  "intent":"project_update_details",
+  "projectName":"80 vernon",
+  "updates":{
+    "gcCompany":"Turner Construction"
+  }
+}
+
+User:
+Set GC phone of 80 vernon to 212-555-1234
+
+Output:
+{
+  "intent":"project_update_details",
+  "projectName":"80 vernon",
+  "updates":{
+    "gcContactPhone":"212-555-1234"
+  }
+}
+
+User:
+Set superintendent of 80 vernon to Mike Johnson
+
+Output:
+{
+  "intent":"project_update_details",
+  "projectName":"80 vernon",
+  "updates":{
+    "siteSuperName":"Mike Johnson"
+  }
+}
+
+User:
+Mark 80 vernon as urgent
+
+Output:
+{
+  "intent":"project_update_details",
+  "projectName":"80 vernon",
+  "updates":{
+    "isUrgent":true
+  }
+}
 `
 ,
       messages: [

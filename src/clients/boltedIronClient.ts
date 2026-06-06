@@ -773,6 +773,21 @@ async createProject(
     }
   );
 
-}
+},
+
+async updateProject(
+  projectId: number,
+  data: any
+) {
+
+  return callTrpc(
+    "projects.update",
+    {
+      id: projectId,
+      data
+    }
+  );
+
+},
 
 };
