@@ -601,6 +601,42 @@ Output:
     "isUrgent":true
   }
 }
+
+User:
+Mark 80 vernon as unurgent
+
+Output:
+{
+  "intent":"project_update_details",
+  "projectName":"80 vernon",
+  "updates":{
+    "isUrgent":false
+  }
+}
+
+User:
+Remove urgent flag from 80 vernon
+
+Output:
+{
+  "intent":"project_update_details",
+  "projectName":"80 vernon",
+  "updates":{
+    "isUrgent":false
+  }
+}
+
+User:
+Mark Ross st as normal priority
+
+Output:
+{
+  "intent":"project_update_details",
+  "projectName":"Ross st",
+  "updates":{
+    "isUrgent":false
+  }
+}
 `
 ,
       messages: [
