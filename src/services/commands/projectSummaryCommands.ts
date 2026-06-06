@@ -47,96 +47,116 @@ ${projectName}
   ]);
 
   console.log(
+    "SUMMARY PROJECT RAW:",
+    JSON.stringify(
+      projectInfo,
+      null,
+      2
+    )
+  );
+
+  console.log(
+    "SUMMARY ASSIGNMENTS RAW:",
+    JSON.stringify(
+      assignments,
+      null,
+      2
+    )
+  );
+
+  console.log(
     "SUMMARY CHECKLIST RAW:",
     JSON.stringify(
-        checklist,
-        null,
-        2
+      checklist,
+      null,
+      2
     )
-    );
+  );
 
-    console.log(
+  console.log(
     "SUMMARY NOTES RAW:",
     JSON.stringify(
-        notes,
-        null,
-        2
+      notes,
+      null,
+      2
     )
-    );
+  );
 
-const checklistItems =
-  checklist?.json || [];
+  const projectData =
+    projectInfo?.json ||
+    projectInfo ||
+    {};
 
-const noteItems =
-  notes?.json || [];
+  const assignmentItems =
+    assignments?.json ||
+    assignments ||
+    [];
 
-const totalItems =
-  checklistItems.length;
+  const checklistItems =
+    checklist?.json ||
+    checklist ||
+    [];
 
-const completedItems =
-  checklistItems.filter(
-    (item:any) =>
-      item.isCompleted
-  ).length;
+  const noteItems =
+    notes?.json ||
+    notes ||
+    [];
 
-const pendingItems =
+  const totalItems =
+    checklistItems.length;
+
+  const completedItems =
+    checklistItems.filter(
+      (item: any) =>
+        item.isCompleted
+    ).length;
+
+  const pendingItems =
     totalItems -
     completedItems;
 
-const assignedSubs =
-    assignments
-        .map(
+  const assignedSubs =
+    assignmentItems
+      .map(
         (a: any) =>
-            a.subcontractor
+          a.subcontractor
             ?.companyName
-        )
-        .filter(Boolean)
-        .join("\n• ");
+      )
+      .filter(Boolean)
+      .join("\n• ");
 
   const recentNotes =
-  noteItems
-    .slice(0, 3)
-    .map(
-      (n:any) =>
-        `• ${n.content}`
-    )
-    .join("\n");
-
-console.log(
-  "SUMMARY ASSIGNMENTS RAW:",
-  JSON.stringify(
-    assignments,
-    null,
-    2
-  )
-);
-
-console.log(
-  "SUMMARY PROJECT RAW:",
-  JSON.stringify(
-    projectInfo,
-    null,
-    2
-  )
-);
+    noteItems
+      .slice(0, 3)
+      .map(
+        (n: any) =>
+          `• ${n.content}`
+      )
+      .join("\n");
 
   return `
 📋 PROJECT SUMMARY
 
 Project:
-${projectInfo.name}
+${projectData.name || project.name}
 
 Status:
-${projectInfo.status}
+${projectData.status || "N/A"}
 
 Urgent:
-${projectInfo.isUrgent ? "Yes" : "No"}
+${projectData.isUrgent ? "Yes" : "No"}
 
 GC:
-${projectInfo.gcCompany || "N/A"}
+${projectData.gcCompany || "N/A"}
 
 GC Contact:
-${projectInfo.gcContactName || "N/A"}
+${projectData.gcContactName || "N/A"}
+
+GC Phone:
+${projectData.gcContactPhone || "N/A"}
+
+GC Email:
+${projectData.gcContactEmail || "N/A"}
 
 Assigned Team:
 ${assignedSubs || "None"}
