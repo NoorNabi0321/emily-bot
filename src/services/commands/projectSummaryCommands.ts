@@ -46,6 +46,24 @@ ${projectName}
 
   ]);
 
+  console.log(
+    "SUMMARY CHECKLIST RAW:",
+    JSON.stringify(
+        checklist,
+        null,
+        2
+    )
+    );
+
+    console.log(
+    "SUMMARY NOTES RAW:",
+    JSON.stringify(
+        notes,
+        null,
+        2
+    )
+    );
+
   const totalItems =
     checklist.length;
 
