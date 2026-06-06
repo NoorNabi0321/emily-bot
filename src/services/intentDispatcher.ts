@@ -71,6 +71,11 @@ import {
 }
 from "./commands/projectUpdateCommands";
 
+import {
+  getProjectSummary
+}
+from "./commands/projectSummaryCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -201,6 +206,12 @@ export async function executeIntent(
         return updateProjectDetails(
           intent.projectName || "",
           intent.updates || {}
+        );
+
+      case IntentType.PROJECT_SUMMARY:
+
+        return getProjectSummary(
+          intent.projectName || ""
         );
 
     default:

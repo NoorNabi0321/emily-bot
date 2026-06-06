@@ -274,6 +274,19 @@ export function validateIntent(
 
         break;
 
+      case IntentType.PROJECT_SUMMARY:
+
+        if (!intent.projectName) {
+
+          return {
+            valid: false,
+            error: "Project name required"
+          };
+
+        }
+
+        break;
+
   }
 
   return {

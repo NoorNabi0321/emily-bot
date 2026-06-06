@@ -790,4 +790,17 @@ async updateProject(
 
 },
 
+async getProjectNotes(
+  projectId: number
+) {
+
+  return callTrpc(
+    "notes.list",
+    {
+      projectId
+    }
+  );
+
+},
+
 };

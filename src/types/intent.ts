@@ -35,6 +35,8 @@ export enum IntentType {
 
   CHECKLIST_COMPLETE = "checklist_complete",
 
+  PROJECT_SUMMARY = "project_summary",
+
   NOTE_CREATE = "note_create",
 
   PROJECT_DELETE = "project_delete",

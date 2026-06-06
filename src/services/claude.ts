@@ -637,6 +637,44 @@ Output:
     "isUrgent":false
   }
 }
+
+User:
+Give me summary of 80 vernon
+
+Output:
+{
+  "intent":"project_summary",
+  "projectName":"80 vernon"
+}
+
+User:
+Project summary for 57 tehama st
+
+Output:
+{
+  "intent":"project_summary",
+  "projectName":"57 tehama st"
+}
+
+User:
+Tell me everything about Ross st
+
+Output:
+{
+  "intent":"project_summary",
+  "projectName":"Ross st"
+}
+
+User:
+Show project details for Eastburn Plaza
+
+Output:
+{
+  "intent":"project_summary",
+  "projectName":"Eastburn Plaza"
+}
+
+
 `
 ,
       messages: [
