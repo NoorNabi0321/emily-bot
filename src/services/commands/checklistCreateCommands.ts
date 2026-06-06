@@ -6,10 +6,23 @@ export async function createChecklistItem(
   title: string
 ): Promise<string> {
 
+  console.log(
+    "[CHECKLIST CREATE] START",
+    {
+      projectName,
+      title
+    }
+  );
+
   const project =
     await boltedIron.searchProject(
       projectName
     );
+
+  console.log(
+    "[CHECKLIST CREATE] PROJECT FOUND:",
+    project
+  );
 
   if (!project) {
 
@@ -22,14 +35,32 @@ ${projectName}
 
   }
 
-  const result =
-    await boltedIron
-      .createChecklistItem(
+  try {
+
+    console.log(
+      "[CHECKLIST CREATE] CALLING API",
+      {
+        projectId: project.id,
+        title
+      }
+    );
+
+    const result =
+      await boltedIron.createChecklistItem(
         project.id,
         title
       );
 
-  return `
+    console.log(
+      "[CHECKLIST CREATE] API RESULT:",
+      JSON.stringify(
+        result,
+        null,
+        2
+      )
+    );
+
+    return `
 ✅ CHECKLIST ITEM CREATED
 
 Project:
@@ -41,5 +72,24 @@ ${title}
 Checklist ID:
 ${result?.id || "Created"}
 `;
+
+  } catch (error) {
+
+    console.error(
+      "[CHECKLIST CREATE] ERROR:",
+      error
+    );
+
+    return `
+❌ CHECKLIST CREATION FAILED
+
+Project:
+${project.name}
+
+Item:
+${title}
+`;
+
+  }
 
 }
