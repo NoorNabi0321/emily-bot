@@ -56,6 +56,10 @@ import {
 }
 from "./commands/checklistCreateCommands";
 
+import {
+  deleteChecklistItem
+}
+from "./commands/checklistDeleteCommands";
 
 export async function executeIntent(
   intent: ParsedIntent,
@@ -166,6 +170,13 @@ export async function executeIntent(
 
         return getProjectChecklist(
           intent.projectName || ""
+        );
+      
+      case IntentType.CHECKLIST_DELETE:
+
+        return deleteChecklistItem(
+          intent.projectName || "",
+          intent.itemTitle || ""
         );
 
     default:

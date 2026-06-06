@@ -496,6 +496,36 @@ Output:
   "intent":"checklist_list",
   "projectName":"80 vernon"
 }
+
+User:
+Delete checklist item Steel Delivery from 57 tehama st
+
+Output:
+{
+  "intent":"checklist_delete",
+  "projectName":"57 tehama st",
+  "itemTitle":"Steel Delivery"
+}
+
+User:
+Remove checklist item Material Order from 80 vernon
+
+Output:
+{
+  "intent":"checklist_delete",
+  "projectName":"80 vernon",
+  "itemTitle":"Material Order"
+}
+
+User:
+Delete checklist item Inspection from Ross st
+
+Output:
+{
+  "intent":"checklist_delete",
+  "projectName":"Ross st",
+  "itemTitle":"Inspection"
+}
 `
 ,
       messages: [

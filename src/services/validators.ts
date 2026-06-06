@@ -217,6 +217,28 @@ export function validateIntent(
 
         break;
 
+      case IntentType.CHECKLIST_DELETE:
+
+        if (!intent.projectName) {
+
+          return {
+            valid: false,
+            error: "Project name required"
+          };
+
+        }
+
+        if (!intent.itemTitle) {
+
+          return {
+            valid: false,
+            error: "Checklist item title required"
+          };
+
+        }
+
+        break;
+
   }
 
   return {

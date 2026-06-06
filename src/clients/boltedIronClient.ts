@@ -735,9 +735,22 @@ async createChecklistItem(
       projectId,
       title,
       description
+    },
+    
+  );
+},
+
+async deleteChecklistItem(
+  checklistId: number
+) {
+
+  return callTrpc(
+    "checklists.delete",
+    {
+      id: checklistId
     }
   );
 
-}
+},
 
 };
