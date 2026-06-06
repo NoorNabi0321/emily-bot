@@ -107,9 +107,10 @@ export async function executeIntent(
 
     case IntentType.CHECKLIST_CREATE:
 
-        return getProjectChecklist(
-            intent.projectName || ""
-        );
+      return createChecklistItem(
+        intent.projectName || "",
+        intent.itemTitle || ""
+      );
 
     case IntentType.CHECKLIST_COMPLETE:
 
