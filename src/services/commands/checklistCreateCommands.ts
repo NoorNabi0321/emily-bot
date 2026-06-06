@@ -98,18 +98,23 @@ console.log(
       )
     );
 
-    return `
-✅ CHECKLIST ITEM CREATED
+  const checklistId =
+    result?.json?.id ||
+    result?.id ||
+    "Created";
 
-Project:
-${project.name}
+  return `
+  ✅ CHECKLIST ITEM CREATED
 
-Item:
-${title}
+  Project:
+  ${project.name}
 
-Checklist ID:
-${result?.id || "Created"}
-`;
+  Item:
+  ${title}
+
+  Checklist ID:
+  ${checklistId}
+  `;
 
   } catch (error) {
 
