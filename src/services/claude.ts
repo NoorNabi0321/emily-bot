@@ -526,6 +526,33 @@ Output:
   "projectName":"Ross st",
   "itemTitle":"Inspection"
 }
+
+User:
+Create project Eastburn Plaza
+
+Output:
+{
+  "intent":"project_create",
+  "projectName":"Eastburn Plaza"
+}
+
+User:
+Add project 123 Main St
+
+Output:
+{
+  "intent":"project_create",
+  "projectName":"123 Main St"
+}
+
+User:
+New project 77 Franklin Ave
+
+Output:
+{
+  "intent":"project_create",
+  "projectName":"77 Franklin Ave"
+}
 `
 ,
       messages: [

@@ -762,4 +762,17 @@ async deleteChecklistItem(
 
 },
 
+async createProject(
+  name: string
+) {
+
+  return callTrpc(
+    "projects.create",
+    {
+      name
+    }
+  );
+
+}
+
 };
