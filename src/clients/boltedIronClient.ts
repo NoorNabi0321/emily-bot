@@ -725,25 +725,25 @@ async createNote(
 
 async createChecklistItem(
   projectId:number,
-  title:string,
-  description?:string
+  text:string,
+  order:number
 ) {
 
   console.log(
-    "[BIH CREATE CHECKLIST]",
+    "[CHECKLIST CREATE ITEM]",
     {
       projectId,
-      title,
-      description
+      text,
+      order
     }
   );
 
   return callTrpc(
-    "checklists.create",
+    "checklists.createItem",
     {
       projectId,
-      title,
-      description
+      text,
+      order
     }
   );
 
