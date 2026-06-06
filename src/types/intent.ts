@@ -23,6 +23,8 @@ export enum IntentType {
 
   CHECKLIST_CREATE = "checklist_create",
 
+  CHECKLIST_LIST = "checklist_list",
+
   PROJECT_UPDATE_STATUS = "project_update_status",
 
   PROJECT_UPDATE_DATE = "project_update_date",

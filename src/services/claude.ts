@@ -469,6 +469,33 @@ Output:
   "projectName":"Franklin",
   "itemTitle":"Material Order"
 }
+
+User:
+Show checklist for 80 vernon
+
+Output:
+{
+  "intent":"checklist_list",
+  "projectName":"80 vernon"
+}
+
+User:
+Show checklist items for 80 vernon
+
+Output:
+{
+  "intent":"checklist_list",
+  "projectName":"80 vernon"
+}
+
+User:
+Show all checklist items for 80 vernon
+
+Output:
+{
+  "intent":"checklist_list",
+  "projectName":"80 vernon"
+}
 `
 ,
       messages: [

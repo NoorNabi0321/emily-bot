@@ -56,6 +56,7 @@ import {
 }
 from "./commands/checklistCreateCommands";
 
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -159,6 +160,12 @@ export async function executeIntent(
         return createChecklistItem(
           intent.projectName || "",
           intent.itemTitle || ""
+        );
+
+      case IntentType.CHECKLIST_LIST:
+
+        return getProjectChecklist(
+          intent.projectName || ""
         );
 
     default:
