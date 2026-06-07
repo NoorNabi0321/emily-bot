@@ -7,61 +7,100 @@ export async function getProjectReport(
 
   let projects: any[] = [];
 
+  async function normalize(
+    promise:any
+    ) {
+
+    const result =
+        await promise;
+
+    return (
+        result?.json ||
+        result ||
+        []
+    );
+
+    }
+
   switch (reportType) {
 
     case "archived":
 
       projects =
-        await boltedIron.listProjects({
-          isArchived: true
-        });
+        await normalize(
+            boltedIron.listProjects({
+            status: "Fabrication"
+            })
+        );
 
       break;
 
     case "unassigned":
 
       projects =
-        await boltedIron.listProjects({
-          isUnassigned: true
-        });
+        await normalize(
+            boltedIron.listProjects({
+            status: "Fabrication"
+            })
+        );
 
       break;
 
     case "fabrication":
 
       projects =
-        await boltedIron.listProjects({
-          status: "Fabrication"
-        });
+        await normalize(
+            boltedIron.listProjects({
+            status: "Fabrication"
+            })
+        );
 
       break;
 
     case "onsite":
 
       projects =
-        await boltedIron.listProjects({
-          status: "On-Site"
-        });
+        await normalize(
+            boltedIron.listProjects({
+            status: "Fabrication"
+            })
+        );
 
       break;
 
     case "installed":
 
       projects =
-        await boltedIron.listProjects({
-          status: "Installed"
-        });
+        await normalize(
+            boltedIron.listProjects({
+            status: "Fabrication"
+            })
+        );
 
       break;
 
     case "urgent":
 
-      const allProjects =
+      const allProjectsRaw =
         await boltedIron.listProjects({});
 
-      projects =
+        console.log(
+        "REPORT PROJECTS RAW:",
+        JSON.stringify(
+            allProjectsRaw,
+            null,
+            2
+        )
+        );
+
+      const allProjects =
+        allProjectsRaw?.json ||
+        allProjectsRaw ||
+        [];
+
+        projects =
         allProjects.filter(
-          (p:any) => p.isUrgent
+            (p:any) => p.isUrgent
         );
 
       break;
