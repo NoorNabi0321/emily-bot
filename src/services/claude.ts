@@ -737,6 +737,60 @@ Output:
   "intent": "project_unarchive",
   "projectName": "80 vernon"
 }
+
+User:
+List urgent projects
+
+Output:
+{
+  "intent":"project_report",
+  "reportType":"urgent"
+}
+
+User:
+Show urgent projects
+
+Output:
+{
+  "intent":"project_report",
+  "reportType":"urgent"
+}
+
+User:
+List archived projects
+
+Output:
+{
+  "intent":"project_report",
+  "reportType":"archived"
+}
+
+User:
+Show archived projects
+
+Output:
+{
+  "intent":"project_report",
+  "reportType":"archived"
+}
+
+User:
+Show unassigned projects
+
+Output:
+{
+  "intent":"project_report",
+  "reportType":"unassigned"
+}
+
+User:
+Show fabrication projects
+
+Output:
+{
+  "intent":"project_report",
+  "reportType":"fabrication"
+}
 `
 ,
       messages: [
@@ -791,6 +845,9 @@ Output:
       filters: parsed.filters ?? undefined,
 
       confirmDelete: parsed.confirmDelete ?? false,
+
+      reportType:
+        parsed.reportType ?? undefined,
 
       rawMessage: message
     };

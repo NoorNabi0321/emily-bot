@@ -803,4 +803,15 @@ async getProjectNotes(
 
 },
 
+async listProjects(
+  filters: any = {}
+) {
+
+  return callTrpc(
+    "projects.list",
+    filters
+  );
+
+},
+
 };

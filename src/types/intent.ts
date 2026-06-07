@@ -61,6 +61,8 @@ export enum IntentType {
 
   PROJECT_UNARCHIVE = "project_unarchive", 
 
+  PROJECT_REPORT = "project_report",
+
 }
 
 export interface ParsedIntent {
@@ -89,6 +91,8 @@ export interface ParsedIntent {
   filters?: Record<string, unknown>;
 
   confirmDelete?: boolean;
+
+  reportType?: string;
 
   rawMessage: string;
 }

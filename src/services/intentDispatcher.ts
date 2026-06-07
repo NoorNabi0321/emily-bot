@@ -82,6 +82,11 @@ import {
 }
 from "./commands/projectArchiveCommands";
 
+import {
+  getProjectReport
+}
+from "./commands/projectReportCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -230,6 +235,12 @@ export async function executeIntent(
 
         return unarchiveProject(
           intent.projectName || ""
+        );
+
+      case IntentType.PROJECT_REPORT:
+
+        return getProjectReport(
+          intent.reportType || ""
         );
 
     default:
