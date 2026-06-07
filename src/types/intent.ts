@@ -57,6 +57,10 @@ export enum IntentType {
 
     NOTE_LIST = "note_list",
 
+  PROJECT_ARCHIVE = "project_archive",
+
+  PROJECT_UNARCHIVE = "project_unarchive", 
+
 }
 
 export interface ParsedIntent {

@@ -117,13 +117,12 @@ ${projectName}
 
   const assignedSubs =
     assignmentItems
-      .map(
-        (a: any) =>
-          a.subcontractor
-            ?.companyName
-      )
-      .filter(Boolean)
-      .join("\n• ");
+        .map(
+        (a:any) =>
+            `• ${a.subcontractor?.companyName}`
+        )
+        .filter(Boolean)
+        .join("\n");
 
   const recentNotes =
     noteItems

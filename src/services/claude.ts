@@ -675,6 +675,68 @@ Output:
 }
 
 
+User:
+Archive project 80 vernon
+
+Output:
+{
+  "intent": "project_archive",
+  "projectName": "80 vernon"
+}
+
+User:
+Archive 57 tehama st
+
+Output:
+{
+  "intent": "project_archive",
+  "projectName": "80 vernon"
+}
+
+User:
+Hide project Ross st
+
+Output:
+{
+  "intent": "project_archive",
+  "projectName": "80 vernon"
+}
+
+User:
+Mark 80 vernon as archived
+
+Output:
+{
+  "intent": "project_archive",
+  "projectName": "80 vernon"
+}
+
+User:
+Unarchive project 80 vernon
+
+Output:
+{
+  "intent": "project_unarchive",
+  "projectName": "80 vernon"
+}
+
+User:
+Restore 57 tehama st
+
+Output:
+{
+  "intent": "project_unarchive",
+  "projectName": "80 vernon"
+}
+
+User:
+Unhide Ross st
+
+Output:
+{
+  "intent": "project_unarchive",
+  "projectName": "80 vernon"
+}
 `
 ,
       messages: [

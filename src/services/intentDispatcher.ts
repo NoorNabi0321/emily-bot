@@ -76,6 +76,12 @@ import {
 }
 from "./commands/projectSummaryCommands";
 
+import {
+  archiveProject,
+  unarchiveProject
+}
+from "./commands/projectArchiveCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -211,6 +217,18 @@ export async function executeIntent(
       case IntentType.PROJECT_SUMMARY:
 
         return getProjectSummary(
+          intent.projectName || ""
+        );
+
+      case IntentType.PROJECT_ARCHIVE:
+
+        return archiveProject(
+          intent.projectName || ""
+        );
+
+      case IntentType.PROJECT_UNARCHIVE:
+
+        return unarchiveProject(
           intent.projectName || ""
         );
 

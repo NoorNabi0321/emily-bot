@@ -287,6 +287,21 @@ export function validateIntent(
 
         break;
 
+      case IntentType.PROJECT_ARCHIVE:
+
+      case IntentType.PROJECT_UNARCHIVE:
+
+        if (!intent.projectName) {
+
+          return {
+            valid: false,
+            error: "Project name required"
+          };
+
+        }
+
+        break;
+
   }
 
   return {
