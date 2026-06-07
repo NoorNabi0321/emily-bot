@@ -14,11 +14,27 @@ export async function getProjectReport(
     const result =
         await promise;
 
-    return (
-        result?.json ||
-        result ||
-        []
+    console.log(
+        "REPORT NORMALIZE RAW:",
+        JSON.stringify(
+        result,
+        null,
+        2
+        )
     );
+
+    if (Array.isArray(result)) {
+        return result;
+    }
+
+    if (
+        result &&
+        Array.isArray(result.json)
+    ) {
+        return result.json;
+    }
+
+    return [];
 
     }
 
@@ -81,22 +97,10 @@ export async function getProjectReport(
 
     case "urgent":
 
-      const allProjectsRaw =
-        await boltedIron.listProjects({});
-
-        console.log(
-        "REPORT PROJECTS RAW:",
-        JSON.stringify(
-            allProjectsRaw,
-            null,
-            2
-        )
-        );
-
       const allProjects =
-        allProjectsRaw?.json ||
-        allProjectsRaw ||
-        [];
+        await normalize(
+            boltedIron.listProjects({})
+        );
 
         projects =
         allProjects.filter(
