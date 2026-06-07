@@ -910,6 +910,56 @@ Output:
 {
   "intent": "dashboard"
 }
+
+User:
+Show urgent fabrication projects
+
+Output:
+{
+  "intent": "project_report",
+  "status": "Fabrication",
+  "isUrgent": true
+}
+
+User:
+List urgent fabrication jobs
+
+Output:
+{
+  "intent": "project_report",
+  "status": "Fabrication",
+  "isUrgent": true
+}
+
+User:
+Show archived fabrication projects
+
+Output:
+{
+  "intent": "project_report",
+  "status": "Fabrication",
+  "isArchived": true
+}
+
+User:
+Show unassigned fabrication projects
+
+Output:
+{
+  "intent": "project_report",
+  "status": "Fabrication",
+  "isUnassigned": true
+}
+
+User:
+Show urgent projects assigned to Victor
+
+Output:
+{
+  "intent": "project_report",
+  "isUrgent": true,
+  "subcontractorName": "Victor"
+}
 `
 ,
       messages: [
@@ -968,7 +1018,16 @@ Output:
       reportType:
         parsed.reportType ?? undefined,
 
-      rawMessage: message
+      rawMessage: message,
+
+      isUrgent:
+        parsed.isUrgent ?? undefined,
+
+      isArchived:
+        parsed.isArchived ?? undefined,
+
+      isUnassigned:
+        parsed.isUnassigned ?? undefined,
     };
 
     return {

@@ -99,4 +99,10 @@ export interface ParsedIntent {
   reportType?: string;
 
   rawMessage: string;
+
+  isUrgent?: boolean;
+
+  isArchived?: boolean;
+
+  isUnassigned?: boolean;
 }

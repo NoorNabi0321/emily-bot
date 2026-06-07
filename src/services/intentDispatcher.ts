@@ -97,6 +97,12 @@ import {
 }
 from "./commands/dashboardCommands";
 
+import {
+  getAdvancedReport
+}
+from "./commands/advancedReportCommands";
+
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -248,6 +254,19 @@ export async function executeIntent(
         );
 
       case IntentType.PROJECT_REPORT:
+
+        if (
+          intent.isUrgent ||
+          intent.isArchived ||
+          intent.isUnassigned ||
+          intent.subcontractorName
+        ) {
+
+          return getAdvancedReport(
+            intent
+          );
+
+        }
 
         return getProjectReport(
           intent.reportType || ""
