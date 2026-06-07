@@ -92,6 +92,11 @@ import {
 }
 from "./commands/subcontractorSummaryCommands";
 
+import {
+  getDashboard
+}
+from "./commands/dashboardCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -253,6 +258,10 @@ export async function executeIntent(
         return getSubcontractorSummary(
           intent.subcontractorName || ""
         );
+
+      case IntentType.DASHBOARD:
+
+        return getDashboard();
 
     default:
       return `

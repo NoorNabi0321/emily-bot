@@ -854,6 +854,62 @@ Output:
   "intent": "subcontractor_summary",
   "subcontractorName": "Mendy"
 }
+
+User:
+Show dashboard
+
+Output:
+{
+  "intent": "dashboard"
+}
+
+User:
+Show stats
+
+Output:
+{
+  "intent": "dashboard"
+}
+
+User:
+Show overview
+
+Output:
+{
+  "intent": "dashboard"
+}
+
+User:
+Project statistics
+
+Output:
+{
+  "intent": "dashboard"
+}
+
+User:
+Give me dashboard
+
+Output:
+{
+  "intent": "dashboard"
+}
+
+User:
+Business dashboard
+
+Output:
+{
+  "intent": "dashboard"
+}
+
+User:
+Management dashboard
+
+Output:
+{
+  "intent": "dashboard"
+}
 `
 ,
       messages: [

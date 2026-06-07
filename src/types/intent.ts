@@ -65,6 +65,8 @@ export enum IntentType {
 
   SUBCONTRACTOR_SUMMARY = "subcontractor_summary",
 
+  DASHBOARD = "dashboard",
+
 }
 
 export interface ParsedIntent {

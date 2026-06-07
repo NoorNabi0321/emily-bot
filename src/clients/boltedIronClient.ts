@@ -827,4 +827,38 @@ async getProjectsForSubcontractor(
 
 },
 
+async getActiveProjects() {
+
+  return callTrpc(
+    "projects.list",
+    {
+      includeInspectionPassed: true
+    }
+  );
+
+},
+
+async getArchivedProjects() {
+
+  return callTrpc(
+    "projects.list",
+    {
+      isArchived: true,
+      includeInspectionPassed: true
+    }
+  );
+
+},
+
+async getUnassignedProjects() {
+
+  return callTrpc(
+    "projects.list",
+    {
+      isUnassigned: true
+    }
+  );
+
+},
+
 };
