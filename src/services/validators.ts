@@ -302,6 +302,22 @@ export function validateIntent(
 
         break;
 
+      case IntentType.SUBCONTRACTOR_SUMMARY:
+
+        if (
+          !intent.subcontractorName
+        ) {
+
+          return {
+            valid: false,
+            error:
+              "Subcontractor name required"
+          };
+
+        }
+
+        break;
+
   }
 
   return {

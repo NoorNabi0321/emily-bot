@@ -87,6 +87,11 @@ import {
 }
 from "./commands/projectReportCommands";
 
+import {
+  getSubcontractorSummary
+}
+from "./commands/subcontractorSummaryCommands";
+
 export async function executeIntent(
   intent: ParsedIntent,
   user?: any
@@ -241,6 +246,12 @@ export async function executeIntent(
 
         return getProjectReport(
           intent.reportType || ""
+        );
+
+      case IntentType.SUBCONTRACTOR_SUMMARY:
+
+        return getSubcontractorSummary(
+          intent.subcontractorName || ""
         );
 
     default:

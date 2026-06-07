@@ -791,6 +791,69 @@ Output:
   "intent":"project_report",
   "reportType":"fabrication"
 }
+
+User:
+Show summary of Victor
+
+Output:
+{
+  "intent": "subcontractor_summary",
+  "subcontractorName": "Victor"
+}
+
+User:
+Show workload of Victor
+
+Output:
+{
+  "intent": "subcontractor_summary",
+  "subcontractorName": "Victor"
+}
+
+User:
+Tell me about Victor
+
+Output:
+{
+  "intent": "subcontractor_summary",
+  "subcontractorName": "Victor"
+}
+
+User:
+Show Victor's assignments
+
+Output:
+{
+  "intent": "subcontractor_summary",
+  "subcontractorName": "Victor"
+}
+
+User:
+Show summary of Mendy
+
+Output:
+{
+  "intent": "subcontractor_summary",
+  "subcontractorName": "Mendy"
+}
+
+User:
+Show workload of Mendy
+
+Output:
+{
+  "intent": "subcontractor_summary",
+  "subcontractorName": "Mendy"
+}
+
+User:
+What projects does Mendy have
+
+Output:
+{
+  "intent": "subcontractor_summary",
+  "subcontractorName": "Mendy"
+}
 `
 ,
       messages: [

@@ -814,4 +814,17 @@ async listProjects(
 
 },
 
+async getProjectsForSubcontractor(
+  subcontractorId: number
+) {
+
+  return callTrpc(
+    "projects.list",
+    {
+      subcontractorId
+    }
+  );
+
+},
+
 };
