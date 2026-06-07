@@ -40,84 +40,84 @@ export async function getProjectReport(
 
   switch (reportType) {
 
-    case "archived":
+  case "archived":
 
-      projects =
-        await normalize(
-            boltedIron.listProjects({
-            status: "Fabrication"
-            })
-        );
+    projects =
+      await normalize(
+        boltedIron.listProjects({
+          isArchived: true
+        })
+      );
 
-      break;
+    break;
 
-    case "unassigned":
+  case "unassigned":
 
-      projects =
-        await normalize(
-            boltedIron.listProjects({
-            status: "Fabrication"
-            })
-        );
+    projects =
+      await normalize(
+        boltedIron.listProjects({
+          isUnassigned: true
+        })
+      );
 
-      break;
+    break;
 
-    case "fabrication":
+  case "fabrication":
 
-      projects =
-        await normalize(
-            boltedIron.listProjects({
-            status: "Fabrication"
-            })
-        );
+    projects =
+      await normalize(
+        boltedIron.listProjects({
+          status: "Fabrication"
+        })
+      );
 
-      break;
+    break;
 
-    case "onsite":
+  case "onsite":
 
-      projects =
-        await normalize(
-            boltedIron.listProjects({
-            status: "Fabrication"
-            })
-        );
+    projects =
+      await normalize(
+        boltedIron.listProjects({
+          status: "On-Site"
+        })
+      );
 
-      break;
+    break;
 
-    case "installed":
+  case "installed":
 
-      projects =
-        await normalize(
-            boltedIron.listProjects({
-            status: "Fabrication"
-            })
-        );
+    projects =
+      await normalize(
+        boltedIron.listProjects({
+          status: "Installed"
+        })
+      );
 
-      break;
+    break;
 
-    case "urgent":
+  case "urgent":
 
-      const allProjects =
-        await normalize(
-            boltedIron.listProjects({})
-        );
+    const allProjects =
+      await normalize(
+        boltedIron.listProjects({})
+      );
 
-        projects =
-        allProjects.filter(
-            (p:any) => p.isUrgent
-        );
+    projects =
+      allProjects.filter(
+        (p:any) => p.isUrgent === true
+      );
 
-      break;
+    break;
 
-    default:
+  default:
 
-      return `
-❌ Unknown report type
+    return `
+❌ UNKNOWN REPORT TYPE
 
 ${reportType}
 `;
 
-  }
+}
 
   if (!projects.length) {
 
